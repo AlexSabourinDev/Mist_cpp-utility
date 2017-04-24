@@ -16,9 +16,9 @@ namespace Utility
         };
 
     public:
-        static constexpr bool Value = sizeof(InterfaceType) == sizeof(BaseInterface) && std::is_abstract<InterfaceType>::value;
-
         using Type = InterfaceType;
+
+        static constexpr bool Value = sizeof(InterfaceType) == sizeof(BaseInterface) && std::is_abstract<InterfaceType>::value;
     };
 
     // Interface trait that requires that the class being inherited is a pure interface with no data
