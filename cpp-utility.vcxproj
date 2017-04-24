@@ -126,6 +126,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\Interface.h" />
+    <ClInclude Include="include\Singleton.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tests\main.cpp" />

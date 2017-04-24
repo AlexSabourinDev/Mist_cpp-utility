@@ -1,6 +1,15 @@
 #include "../include/Interface.h"
+#include "../include/Singleton.h"
 
 #include <cassert>
+#include <iostream>
+#include <string>
+
+void Pause()
+{
+    char c;
+    std::cin >> c;
+}
 
 void TestInterface()
 {
@@ -25,9 +34,25 @@ void TestInterface()
     assert(Utility::IsInterface<InheretedClass>::Value == false && "InheretedClass is an interface!");
 }
 
+void TestSingleton()
+{
+    class SingletonTest : public Utility::Singleton<SingletonTest>
+    {
+    public:
+        void Print()
+        {
+            std::cout << "Singleton Print, count: " + std::to_string(SingletonTest::SingletonCount) << std::endl;
+        }
+    };
+
+    SingletonTest::Instance()->Print();
+    Pause();
+}
+
 int main()
 {
     TestInterface();
+    TestSingleton();
 
     return 0;
 }
