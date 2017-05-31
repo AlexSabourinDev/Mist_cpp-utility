@@ -1,5 +1,4 @@
-#include "../include/Interface.h"
-#include "../include/Singleton.h"
+
 #include "../include/RingBuffer.h"
 
 #include <cassert>
@@ -13,42 +12,6 @@ void Pause()
     std::cin >> c;
 }
 
-void TestInterface()
-{
-    class TestInterface
-    {
-        virtual void TestMethod() = 0;
-    };
-
-    class PlainClass
-    {
-        int m_Data;
-    };
-
-    class InheretedClass : public Mist::Interface<TestInterface>
-    {
-        void TestMethod() override {};
-    };
-
-
-    assert(Mist::IsInterface<TestInterface>::Value && "TestInterface is not an interface!");
-    assert(Mist::IsInterface<PlainClass>::Value == false && "PlainClass is an interface!");
-    assert(Mist::IsInterface<InheretedClass>::Value == false && "InheretedClass is an interface!");
-}
-
-void TestSingleton()
-{
-    class SingletonTest : public Mist::Singleton<SingletonTest>
-    {
-    public:
-        void Print()
-        {
-            std::cout << "Singleton Print, count: " + std::to_string(SingletonTest::cSingletonCount) << std::endl;
-        }
-    };
-
-    SingletonTest::Instance()->Print();
-}
 
 void TestRingBuffer()
 {
@@ -70,8 +33,6 @@ void TestRingBuffer()
 
 int main()
 {
-    TestInterface();
-    TestSingleton();
 	TestRingBuffer();
 
 	Pause();
