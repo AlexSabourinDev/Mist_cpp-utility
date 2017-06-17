@@ -5,7 +5,7 @@
 
 // Define a utility macro to define multiple optional namespaces.
 // @Details: This decision was made in order to support nesting namespaces 
-//	         in later files and modules
+//			in later files and modules
 #if MIST_USE_NAMESPACES
 
 #define OPTIONAL_NAMESPACE(namespaceName) \
