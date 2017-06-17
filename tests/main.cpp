@@ -1,5 +1,5 @@
 
-#include "../include/RingBuffer.h"
+#include "../DataStructures/RingBuffer.h"
 
 #include <cassert>
 #include <iostream>
