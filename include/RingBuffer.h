@@ -6,7 +6,19 @@
 MIST_NAMESPACE
 
 // A simple ring buffer implementation with a read and write head. 
-// Not atomic, but could easily be made atomic using atomic types
+// @Details: The size requested in the tSize parameter is not the guaranteed amount that you can write
+//			 in one go. It typically will be tSize - 1, but that might change in time.
+// @Example: A contrived example use would look like: 
+//
+//			 RingBuffer<int, 10> buffer;
+//			 int result = 0;
+//			 if(buffer.TryWrite(20)) {
+//				assert(buffer.TryRead(&result));
+//				std::cout << result << std::endl;
+//			 }
+//			 if(buffer.TryRead(&result) == false) {
+//				std::cout << "Nothing left to read" << std::endl;
+//			 }
 template< typename ValueType, size_t tSize >
 class RingBuffer {
 	static_assert(tSize > 1, "A Ring Buffer Cannot be of size 0. Is it a typo?");
@@ -28,12 +40,8 @@ public:
 
 	// Write a value into the buffer, moving the write head pointer forward.
 	// If the method returns false, that means the next spot hasn't been read yet and nothing is written
-	bool TryWrite(const ValueType& writeValue);
-
-	// Write a value into the buffer, moving the write head pointer forward.
-	// If the method returns false, that means the next spot hasn't been read yet and nothing is written
-	// The moving version
-	bool TryWrite(ValueType&& writeValue);
+	template< typename WriteType = ValueType, typename = std::enable_if<std::is_convertible<WriteType, ValueType>::value>::type >
+	bool TryWrite(WriteType&& writeValue);
 
 	// Determine if there is space to write to in the buffer
 	bool CanWrite() const;
@@ -46,9 +54,6 @@ public:
 
 
 	// -Structors-
-	template< typename... Args >
-	RingBuffer(Args&&... defaultValueArguments) : m_Values(defaultValueArguments) {}
-
 	RingBuffer() : m_Values() {}
 
 private:
@@ -60,6 +65,8 @@ private:
 	ValueType m_Values[tSize];
 };
 
+
+// -Implementation-
 
 template< typename ValueType, size_t tSize >
 bool RingBuffer<ValueType, tSize>::TryRead(ValueType* outValue) {
@@ -91,26 +98,13 @@ bool RingBuffer<ValueType, tSize>::CanRead() const {
 }
 
 template< typename ValueType, size_t tSize >
-bool RingBuffer<ValueType, tSize>::TryWrite(const ValueType& writeValue) {
+template< typename WriteType = ValueType, typename = std::enable_if<std::is_convertible<WriteType, ValueType>::value>::type >
+bool RingBuffer<ValueType, tSize>::TryWrite(WriteType&& writeValue) {
 	if (CanWrite() == false) {
 		return false;
 	}
 
-	m_Values[m_WriteHead] = writeValue;
-
-	// Advance the write head
-	m_WriteHead = (m_WriteHead + 1) % tSize;
-	return true;
-}
-
-template< typename ValueType, size_t tSize >
-bool RingBuffer<ValueType, tSize>::TryWrite(ValueType&& writeValue) {
-	if (CanWrite() == false) {
-		return false;
-	}
-
-	// Make sure to keep the reference type instead of devolving into an lvalue
-	m_Values[m_WriteHead] = std::forward<ValueType&&>(writeValue);
+	m_Values[m_WriteHead] = std::forward<WriteType&&>(writeValue);
 
 	// Advance the write head
 	m_WriteHead = (m_WriteHead + 1) % tSize;
