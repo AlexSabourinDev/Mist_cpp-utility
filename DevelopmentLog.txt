@@ -1,0 +1,17 @@
+Project: 	Cpp-Utility Reflection
+
+Task: 		Research existing reflection and meta data strategies
+
+Results: 	I've researched 2 reflection libraries in C++ and one proposal to the C++ standard.
+		The article and proposal in question are: 
+		http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0194r3.html and
+		https://root.cern.ch/blog/status-reflection-c
+		The libraries evaluated were:
+		https://github.com/billyquith/ponder
+		https://github.com/rttrorg/rttr
+
+		Rttr would probably have to be my favourite as it seemed to have a fairly simple
+		API. The goal I'm trying to achieve with my reflection library is a fast, easy to use API
+		that can be queried using a data driven approach. The main goal of the library is to have a
+		good base for a data driven game engine. I believe I'll base some of my design choices on
+		the way Rttr handled their design decisions.
