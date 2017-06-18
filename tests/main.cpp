@@ -18,7 +18,7 @@ void TestRingBuffer() {
 	// -Test-
 	std::cout << "RingBuffer Test" << std::endl;
 
-	Mist::RingBuffer<int, 6> buffer;
+	Mist::RingBuffer<size_t, 6> buffer;
 	// Assure that the returned size is correct
 	assert(buffer.Size() == 6);
 
@@ -31,15 +31,15 @@ void TestRingBuffer() {
 	assert(buffer.TryWrite(10l));
 	
 
-	for (int i = 0; i < 3; i++) {
-		int lValue = 10;
+	for (size_t i = 0; i < 3; i++) {
+		size_t lValue = 10;
 		// Assure that can write and try write return the same value
 		assert(buffer.CanWrite());
 		// Assure that you can write into the circular buffer, assure that you can write lvalues
 		assert(buffer.TryWrite(lValue));
 	}
 
-	for (int i = 0; i < 4; i++) {
+	for (size_t i = 0; i < 4; i++) {
 		// Assure that can write and try write return the same value
 		assert(buffer.CanWrite() == false);
 		// Assure that we can't write when the buffer has been filled
@@ -48,12 +48,12 @@ void TestRingBuffer() {
 		assert(buffer.TryWrite(10) == false);
 	}
 
-	int result = 0;
-	for (int i = 0; i < 5; i++) {
+	size_t result = 0;
+	for (size_t i = 0; i < 5; i++) {
 		// Assure that can read implies the same as try read
 		assert(buffer.CanRead());
 		
-		int otherResult = 0;
+		size_t otherResult = 0;
 		// Assure that we can peek the value
 		assert(buffer.TryPeek(&otherResult));
 		// Attempt to read the amount written to the buffer
@@ -75,8 +75,8 @@ void TestRingBuffer() {
 
 
 	// -Example use-
-	Mist::RingBuffer<int, 10> exampleBuffer;
-	int exampleResult = 0;
+	Mist::RingBuffer<size_t, 10> exampleBuffer;
+	size_t exampleResult = 0;
 	if(exampleBuffer.TryWrite(20)) {
 		assert(exampleBuffer.TryRead(&exampleResult));
 		std::cout << exampleResult << std::endl;
@@ -91,20 +91,13 @@ void TestSorting() {
 	std::cout << "Sorting Test" << std::endl;
 
 	// Test a vector's sorting
-	std::vector<int> m;
-	for (int i = 0; i < 30; i++) {
-		m.push_back(rand() % 100);
+	std::vector<size_t> m;
+	for (size_t i = 0; i < 33; i++) {
+		m.push_back(i);
 	}
-	Mist::MergeSort(std::begin(m), std::end(m));
-	assert(Mist::IsSorted(std::begin(m), std::end(m)));
 
-	// Test an array's sorting
-	float a[30];
-	for (int i = 0; i < 30; i++) {
-		a[i] = rand() % 100;
-	}
-	Mist::MergeSort(std::begin(a), std::end(a));
-	assert(Mist::IsSorted(std::begin(a), std::end(a)));
+	std::vector<size_t> newVec = Mist::MergeSort(&m);
+	assert(Mist::IsSorted(std::begin(newVec), std::end(newVec)));
 
 	// Notify that the ring buffer tests have passed
 	std::cout << "Sorting Tests Passed!" << std::endl;
