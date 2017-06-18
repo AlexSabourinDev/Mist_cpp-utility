@@ -1,9 +1,11 @@
 
-#include "../DataStructures/RingBuffer.h"
+#include "../data-structures/RingBuffer.h"
+#include "../algorithms/Sorting.h"
 
 #include <cassert>
 #include <iostream>
 #include <string>
+#include <vector>
 
 void Pause() {
 	std::cout << "Press Any Key" << std::endl;
@@ -84,8 +86,33 @@ void TestRingBuffer() {
 	}
 }
 
+void TestSorting() {
+	// -Test-
+	std::cout << "Sorting Test" << std::endl;
+
+	// Test a vector's sorting
+	std::vector<int> m;
+	for (int i = 0; i < 30; i++) {
+		m.push_back(rand() % 100);
+	}
+	Mist::MergeSort(std::begin(m), std::end(m));
+	assert(Mist::IsSorted(std::begin(m), std::end(m)));
+
+	// Test an array's sorting
+	float a[30];
+	for (int i = 0; i < 30; i++) {
+		a[i] = rand() % 100;
+	}
+	Mist::MergeSort(std::begin(a), std::end(a));
+	assert(Mist::IsSorted(std::begin(a), std::end(a)));
+
+	// Notify that the ring buffer tests have passed
+	std::cout << "Sorting Tests Passed!" << std::endl;
+}
+
 int main() {
 	TestRingBuffer();
+	TestSorting();
 
 	Pause();
 	return 0;

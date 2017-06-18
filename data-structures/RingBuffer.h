@@ -1,7 +1,7 @@
 #pragma once
 
 #include <utility>
-#include "../Common/UtilityMacros.h"
+#include "../common/UtilityMacros.h"
 
 MIST_NAMESPACE
 
@@ -40,7 +40,9 @@ public:
 
 	// Write a value into the buffer, moving the write head pointer forward.
 	// If the method returns false, that means the next spot hasn't been read yet and nothing is written
-	template< typename WriteType = ValueType, typename = std::enable_if<std::is_convertible<WriteType, ValueType>::value>::type >
+	template< typename WriteType = ValueType, 
+		// Template condition: the Writing type must be convertible to value type
+		typename = std::enable_if<std::is_convertible<WriteType, ValueType>::value>::type >
 	bool TryWrite(WriteType&& writeValue);
 
 	// Determine if there is space to write to in the buffer
