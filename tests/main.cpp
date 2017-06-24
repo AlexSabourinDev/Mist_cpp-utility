@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <list>
 
 void Pause() {
 	std::cout << "Press Any Key" << std::endl;
@@ -93,11 +94,22 @@ void TestSorting() {
 	// Test a vector's sorting
 	std::vector<size_t> m;
 	for (size_t i = 0; i < 33; i++) {
-		m.push_back(i);
+		m.push_back(rand() % 33);
 	}
 
-	std::vector<size_t> newVec = Mist::MergeSort(&m);
-	assert(Mist::IsSorted(std::begin(newVec), std::end(newVec)));
+	// Merge sort the vector
+	Mist::MergeSort(&m);
+	assert(Mist::IsSorted(std::begin(m), std::end(m)));
+
+	// Test an array's sorting
+	size_t arr[33];
+	for (size_t i = 0; i < 33; i++) {
+		arr[i] = rand() % 33;
+	}
+
+	// Merge sort the array
+	Mist::MergeSort(arr, arr + 33);
+	assert(Mist::IsSorted(std::begin(arr), std::end(arr)));
 
 	// Notify that the ring buffer tests have passed
 	std::cout << "Sorting Tests Passed!" << std::endl;
