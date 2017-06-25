@@ -3,6 +3,7 @@
 #include "../common/UtilityMacros.h"
 #include <type_traits>
 #include <iterator>
+#include <stack>
 #include <utility>
 
 // This folder implements a series of sorting algorithms useful for sorting different
@@ -176,8 +177,79 @@ void MergeSort(ValueType* begin, ValueType* end) {
 
 // -Quick Sort-
 
-// Implementation:
-// 
+// The main implementation of quick sort will be an in place quick sort. The implementation takes a
+// begin and end iterator in order to sort the items in place.
+template< typename IteratorType >
+void QuickSort(IteratorType begin, IteratorType end) {
+
+	// Implementation:
+	// push a start and end range for the sort into a queue
+	// Pick the first range of the queue
+	// pick the last element of the range as the pivot
+	// go through every item from the start to the end
+	// keep in place if the item is greater than the pivot
+	// swap with the first greater if the item is lower than the pivot if there is a first greater item
+	// push the right range and the left range into the queue if their size is greater than one
+
+
+	// Create the queue and push the intial range
+	std::stack<std::pair<IteratorType, IteratorType>> sortingRanges;
+	sortingRanges.push(std::make_pair(begin, end));
+
+	// keep looping until the queue has been emptied
+	while (sortingRanges.empty() == false) {
+		// Get the most recent range and remove it
+		std::pair<IteratorType, IteratorType> currentRange = sortingRanges.top();
+		sortingRanges.pop();
+
+		// Grab a pivot in the range from the back
+		IteratorType pivot = currentRange.second - 1;
+		IteratorType compareTarget = currentRange.first;
+		
+		// Initialize the first largest to the pivot to assure that we don't have a first largest as a smaller element
+		IteratorType firstLargest = pivot;
+
+		// Compare the target with the pivot
+		// If the current target is smaller than the pivot, swap it with the first largest
+		// If the current target is larger than the pivot, leave it in place
+		for (; compareTarget != currentRange.second; ++compareTarget) {
+			// Swap them if they aren't the same
+			if (*compareTarget <= *pivot && firstLargest != pivot && compareTarget != pivot) {
+				std::swap(*compareTarget, *firstLargest);
+				// move the first largest forward since it is now smaller
+				++firstLargest;
+			}
+			// If the compare target is larger than the pivot and we don't have a first largest yet,
+			// track it as our first largest
+			else if (*compareTarget > *pivot && firstLargest == pivot) {
+				firstLargest = compareTarget;
+			}
+		}
+
+		// Swap our values and set our new pivot position
+		std::swap(*firstLargest, *pivot);
+		pivot = firstLargest;
+
+		// Once the pivots and the ranges have been created, add the new ranges to the queue
+		
+		// if the right range is larger than one, add it to the queue
+		if (std::distance(pivot + 1, currentRange.second) > 1) {
+			sortingRanges.push(std::make_pair(pivot + 1, currentRange.second));
+		}
+
+		// If the left range is larger than one, add it to the queue
+		if (std::distance(currentRange.first, pivot) > 1) {
+			sortingRanges.push(std::make_pair(currentRange.first, pivot));
+		}
+	}
+}
+
+// This version of quick sort simply pipes the results to the iterator version of quick sort.
+// This version exists to match up with the merge sort interface.
+template< typename CollectionType >
+void QuickSort(CollectionType* collection) {
+	QuickSort(collection->begin(), collection->end());
+}
 
 
 // -Utility Methods-

@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <ctime>
 
 void Pause() {
 	std::cout << "Press Any Key" << std::endl;
@@ -88,34 +89,71 @@ void TestRingBuffer() {
 }
 
 void TestSorting() {
+	const size_t SORTING_ITERATIONS = 1000;
+	const size_t ELEMENT_COUNT = 200;
+
+	srand(time(0));
+
 	// -Test-
 	std::cout << "Sorting Test" << std::endl;
 
+	std::cout << "Merge Sort" << std::endl;
 	// Test a vector's sorting
 	std::vector<size_t> m;
-	for (size_t i = 0; i < 33; i++) {
-		m.push_back(rand() % 33);
+
+	for (size_t j = 0; j < SORTING_ITERATIONS; j++) {
+		m.clear();
+		for (size_t i = 0; i < ELEMENT_COUNT; i++) {
+			m.push_back(rand() % ELEMENT_COUNT);
+		}
+
+		// Merge sort the vector
+		Mist::MergeSort(&m);
+		assert(Mist::IsSorted(std::begin(m), std::end(m)));
+
+		// Test an array's sorting
+		size_t arr[ELEMENT_COUNT];
+		for (size_t i = 0; i < ELEMENT_COUNT; i++) {
+			arr[i] = rand() % ELEMENT_COUNT;
+		}
+
+		// Merge sort the array
+		Mist::MergeSort(&arr[0], &arr[0] + ELEMENT_COUNT);
+		assert(Mist::IsSorted(std::begin(arr), std::end(arr)));
+
 	}
 
-	// Merge sort the vector
-	Mist::MergeSort(&m);
-	assert(Mist::IsSorted(std::begin(m), std::end(m)));
+	std::cout << "Quick Sort" << std::endl;
 
-	// Test an array's sorting
-	size_t arr[33];
-	for (size_t i = 0; i < 33; i++) {
-		arr[i] = rand() % 33;
+	// Run the simulation multiple times
+	for (size_t j = 0; j < SORTING_ITERATIONS; j++) {
+		// clear the vector and restart
+		m.clear();
+		for (size_t i = 0; i < ELEMENT_COUNT; i++) {
+			m.push_back(rand() % ELEMENT_COUNT);
+		}
+
+		// quick sort the vector
+		Mist::QuickSort(&m);
+		assert(Mist::IsSorted(std::begin(m), std::end(m)));
+
+		// Test an array's sorting
+		size_t arr[ELEMENT_COUNT];
+		for (size_t i = 0; i < ELEMENT_COUNT; i++) {
+			arr[i] = rand() % ELEMENT_COUNT;
+		}
+
+		// quick sort the vector
+		Mist::QuickSort(std::begin(arr), std::end(arr));
+		assert(Mist::IsSorted(std::begin(arr), std::end(arr)));
 	}
-
-	// Merge sort the array
-	Mist::MergeSort(arr, arr + 33);
-	assert(Mist::IsSorted(std::begin(arr), std::end(arr)));
 
 	// Notify that the ring buffer tests have passed
 	std::cout << "Sorting Tests Passed!" << std::endl;
 }
 
 int main() {
+
 	TestRingBuffer();
 	TestSorting();
 
