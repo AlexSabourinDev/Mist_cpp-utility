@@ -35,8 +35,8 @@ namespace {
 // the original collection is modified.
 // @Detail: the implementation uses a swapping read and write buffers of size n and swaps between
 //			them every change in block size.
-template< typename CollectionType, typename IndexType = size_t, typename WorkingAreaType = CollectionType>
-void MergeSort(CollectionType* collection, WorkingAreaType* workingArea = &CollectionType()) {
+template< typename CollectionType, typename IndexType = size_t >
+void MergeSort(CollectionType* collection) {
 
 	const size_t collectionSize = std::size(*collection);
 	size_t blockSize = 1;
@@ -46,9 +46,9 @@ void MergeSort(CollectionType* collection, WorkingAreaType* workingArea = &Colle
 	IndexType writeHead = 0;
 
 	// Create our working area
-	workingArea->resize(collectionSize);
+	CollectionType workingArea(collectionSize);
 
-	CollectionType* writeTarget = workingArea;
+	CollectionType* writeTarget = &workingArea;
 	CollectionType* readTarget = &*collection;
 
 	// Keep going until we've passed the collection size for a block
@@ -107,7 +107,7 @@ void MergeSort(CollectionType* collection, WorkingAreaType* workingArea = &Colle
 template< typename ValueType, typename IndexType = size_t >
 void MergeSort(ValueType* begin, ValueType* end) {
 
-	const size_t collectionSize = end - begin;
+	const size_t collectionSize = static_cast<size_t>(end - begin);
 	size_t blockSize = 1;
 
 	// Create our block iterators

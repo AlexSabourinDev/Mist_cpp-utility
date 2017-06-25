@@ -87,7 +87,7 @@ bool RingBuffer<ValueType, tSize>::TryPeek(ValueType* outValue) const {
 		return false;
 	}
 
-	int readPosition = (m_ReadHead + 1) % tSize;
+	size_t readPosition = (m_ReadHead + 1) % tSize;
 	*outValue = m_Values[readPosition];
 	return true;
 }
@@ -95,7 +95,7 @@ bool RingBuffer<ValueType, tSize>::TryPeek(ValueType* outValue) const {
 template< typename ValueType, size_t tSize >
 bool RingBuffer<ValueType, tSize>::CanRead() const {
 	// You can't read where hasn't been written yet
-	int readLocation = (m_ReadHead + 1) % tSize;
+	size_t readLocation = (m_ReadHead + 1) % tSize;
 	return readLocation != m_WriteHead;
 }
 
