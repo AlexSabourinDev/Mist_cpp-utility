@@ -41,7 +41,7 @@ public:
 	// Write a value into the buffer, moving the write head pointer forward.
 	// If the method returns false, that means the next spot hasn't been read yet and nothing is written
 	template< typename WriteType = ValueType, 
-		// Template condition: the Writing type must be convertible to value type
+		// @Template condition: the Writing type must be convertible to value type
 		typename = std::enable_if<std::is_convertible<WriteType, ValueType>::value>::type >
 	bool TryWrite(WriteType&& writeValue);
 
@@ -100,7 +100,9 @@ bool RingBuffer<ValueType, tSize>::CanRead() const {
 }
 
 template< typename ValueType, size_t tSize >
-template< typename WriteType = ValueType, typename = std::enable_if<std::is_convertible<WriteType, ValueType>::value>::type >
+template< typename WriteType, 
+	// @Template Condition: links to condition in class definition
+	typename TemplateCondition >
 bool RingBuffer<ValueType, tSize>::TryWrite(WriteType&& writeValue) {
 	if (CanWrite() == false) {
 		return false;

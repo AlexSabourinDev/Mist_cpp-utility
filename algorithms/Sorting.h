@@ -7,7 +7,7 @@
 #include <utility>
 
 // This folder implements a series of sorting algorithms useful for sorting different
-// types of dat structures. Sorting functions that will be implemented are:
+// types of data structures. Sorting functions that will be implemented are:
 // - QuickSort
 // - MergeSort
 // - InsertionSort
@@ -97,7 +97,6 @@ void MergeSort(CollectionType* collection, WorkingAreaType* workingArea = &Colle
 	}
 
 	std::copy(std::begin(*readTarget), std::end(*readTarget), std::begin(*collection));
-	return;
 }
 
 
@@ -167,10 +166,9 @@ void MergeSort(ValueType* begin, ValueType* end) {
 	}
 
 	// Loop through the read target and write it to the passed in pointer
-	for (int i = 0; i < collectionSize; i++) {
+	for (size_t i = 0; i < collectionSize; i++) {
 		begin[i] = readTarget[i];
 	}
-	return;
 }
 
 
@@ -256,7 +254,7 @@ void QuickSort(CollectionType* collection) {
 
 // Determine if a collection is sorted in O(n) time
 template< typename IteratorType,
-	// Template condition: Assure that the iterator value type is comparable
+	// @Template condition: Assure that the iterator value type is comparable
 	// @Detail: This uses declval and decltype in order to test an expression and see if the return type is correct
 	typename = std::enable_if<std::is_convertible<decltype(std::declval<typename std::iterator_traits<IteratorType>::value_type>() < std::declval<typename std::iterator_traits<IteratorType>::value_type>()), bool>::value>::type>
 bool IsSorted(IteratorType begin, IteratorType end) {

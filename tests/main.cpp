@@ -28,7 +28,7 @@ void TestRingBuffer() {
 	// Assure that can write and try write return the same value
 	assert(buffer.CanWrite());
 	// Assure that you can write into the circular buffer
-	assert(buffer.TryWrite(10));
+	assert(buffer.TryWrite(0));
 	// Assure that you can write a convertible type into the buffer
 	assert(buffer.TryWrite(10l));
 	
@@ -92,7 +92,7 @@ void TestSorting() {
 	const size_t SORTING_ITERATIONS = 1000;
 	const size_t ELEMENT_COUNT = 200;
 
-	srand(time(0));
+	srand((size_t)time(0));
 
 	// -Test-
 	std::cout << "Sorting Test" << std::endl;
