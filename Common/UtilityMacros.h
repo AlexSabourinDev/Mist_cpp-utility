@@ -23,3 +23,8 @@ namespace namespaceName {
 // Define some shortcut namespace macros for quick namespace addition
 #define MIST_NAMESPACE OPTIONAL_NAMESPACE(MIST_NAMESPACE_NAME)
 #define MIST_NAMESPACE_END NAMESPACE_END
+
+// Define the assertion method for assertions
+#include <cassert>
+#define MIST_ASSERT(condition) assert(condition)
+#define MIST_ASSERT_MSG(condition, msg) assert(condition && msg)
