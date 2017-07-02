@@ -1,6 +1,6 @@
-#include "../data-structures/RingBuffer.h"
-#include "../algorithms/Sorting.h"
-#include "../common/UtilityMacros.h"
+#include "../../include/data-structures/RingBuffer.h"
+#include "../../include/algorithms/Sorting.h"
+#include "../../include/common/UtilityMacros.h"
 
 #include <cassert>
 #include <iostream>
