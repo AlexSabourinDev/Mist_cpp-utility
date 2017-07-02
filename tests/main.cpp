@@ -9,6 +9,17 @@
 #include <list>
 #include <ctime>
 
+// Simple timer methods
+std::clock_t s_StartTime;
+
+void BeginTimer() {
+	s_StartTime = std::clock();
+}
+
+double EndTimer() {
+	return (double)(std::clock() - s_StartTime) / (double)(CLOCKS_PER_SEC / 1000);
+}
+
 void Pause() {
 	std::cout << "Press Any Key" << std::endl;
 	char c;
@@ -89,8 +100,8 @@ void TestRingBuffer() {
 }
 
 void TestSorting() {
-	const size_t SORTING_ITERATIONS = 1000;
-	const size_t ELEMENT_COUNT = 200;
+	const size_t SORTING_ITERATIONS = 100;
+	const size_t ELEMENT_COUNT = 100;
 
 	srand((size_t)time(0));
 
@@ -101,6 +112,7 @@ void TestSorting() {
 	// Test a vector's sorting
 	std::vector<size_t> m;
 
+	BeginTimer();
 	for (size_t j = 0; j < SORTING_ITERATIONS; j++) {
 		m.clear();
 		for (size_t i = 0; i < ELEMENT_COUNT; i++) {
@@ -121,9 +133,11 @@ void TestSorting() {
 		Mist::MergeSort(&arr[0], &arr[0] + ELEMENT_COUNT);
 		MIST_ASSERT(Mist::IsSorted(std::begin(arr), std::end(arr)));
 	}
+	std::cout << EndTimer() << "ms" << std::endl;
 
 	std::cout << "Quick Sort" << std::endl;
 
+	BeginTimer();
 	// Run the simulation multiple times
 	for (size_t j = 0; j < SORTING_ITERATIONS; j++) {
 		// clear the vector and restart
@@ -147,7 +161,33 @@ void TestSorting() {
 		MIST_ASSERT(Mist::IsSorted(std::begin(arr), std::end(arr)));
 	}
 
-	// Notify that the ring buffer tests have passed
+	std::cout << EndTimer() << "ms" << std::endl;
+
+	std::cout << "Insertion Sort" << std::endl;
+
+	BeginTimer();
+	// Run the simulation multiple times
+	for (size_t j = 0; j < SORTING_ITERATIONS; j++) {
+		// create a sorted vector of n elements
+		std::vector<size_t> sortedVector;
+		const size_t SORTED_ELEMENT_COUNT = 10;
+		for (int i = 0; i < SORTED_ELEMENT_COUNT; i++) {
+			sortedVector.push_back(i);
+		}
+
+		// create a vector to insert into the vector
+		m.clear();
+		for (size_t i = 0; i < ELEMENT_COUNT; i++) {
+			m.push_back(rand() % ELEMENT_COUNT);
+		}
+
+		Mist::InsertionSort(m, &sortedVector);
+		MIST_ASSERT(Mist::IsSorted(std::begin(sortedVector), std::end(sortedVector)));
+
+	}
+
+	std::cout << EndTimer() << "ms" << std::endl;
+
 	std::cout << "Sorting Tests Passed!" << std::endl;
 }
 

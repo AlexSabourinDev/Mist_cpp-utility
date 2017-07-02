@@ -6,7 +6,7 @@
 #include <stack>
 #include <utility>
 
-// This folder implements a series of sorting algorithms useful for sorting different
+// This file implements a series of sorting algorithms useful for sorting different
 // types of data structures. Sorting functions that will be implemented are:
 // - QuickSort
 // - MergeSort
@@ -14,9 +14,6 @@
 // - HeapSort
 // - BucketSort
 // Possibly: Limited amount of memory sort, external sorting
-// @Detail: Most of these implementations will use iterators in order to abstract the
-//			use of accessing the elements. However, some versions of those algorithms will use
-//			different types of arguments
 MIST_NAMESPACE
 
 namespace {
@@ -242,12 +239,89 @@ void QuickSort(IteratorType begin, IteratorType end) {
 	}
 }
 
-// This version of quick sort simply pipes the results to the iterator version of quick sort.
+// This version of quick sort simply pipes the arguments to the iterator version of quick sort.
 // This version exists to match up with the merge sort interface.
 template< typename CollectionType >
 void QuickSort(CollectionType* collection) {
 	QuickSort(collection->begin(), collection->end());
 }
+
+
+
+// -Insertion Sort-
+
+// This implementation of insertion sort requires that the destination collection be sorted ahead of time
+// If the destination has random access, a binary search will be executed on the destination collection
+// in order to minimize the amount of comparisons
+template< typename SourceCollectionType, typename DestinationCollectionType = SourceCollectionType,
+	// @Template Condition: the destination collection must have a random access operator in order to
+	// use the binary version of insertion soth
+	typename ValueType = decltype(std::declval<DestinationCollectionType>()[0]) >
+void InsertionSort(SourceCollectionType&& source, DestinationCollectionType* destination) {
+	
+	// Implementation:
+	// Loop through all of the source collection elements
+	// Determine a start and end range for the destination collection
+	// Pick the middle element as the pivot and determine if the current insertion element is above the pivot
+	// If it was above, create a new range from pivot + 1 to end of the current range
+	// If it was below create a new range from start to pivot
+	// Once a collection of size 1 is reached, determine if the element we want to insert is above or below and insert it there
+
+	// Pseudo Code:
+	// for each element in source
+	//	define range as start -> end of destination
+	//	while the size of the range is over 1
+	//		select the middle element of the range
+	//		if the current element is above the pivot
+	//			transform the range to be pivot + 1 -> end
+	//		else if the current element is less or equal to the pivot
+	//			transform the range to be start -> pivot
+	//		Note: we could test for equality and if the element is the same as the pivot insert it now
+	//	Once the range is of size 1
+	//	If the element is larget than the start element, insert it after
+	//	If the element is less than or equal to the start element, insert it before
+
+	// The destination collection must be sorted before inserting into it
+	MIST_ASSERT(IsSorted(std::begin(*destination), std::end(*destination)));
+
+	for (const auto& element : source) {
+		size_t start = 0;
+		size_t end = std::size(*destination);
+
+		while (end - start > 1) {
+
+			// Integer division is OK here, truncation is fine.
+			// We substract one from the end in order to assure that when we compare 3 elements
+			// that the end doesn't transform back into itself
+			size_t pivotIndex = start + (end - 1 - start) / 2;
+			const auto& pivot = (*destination)[pivotIndex];
+
+			if (element > pivot) {
+				start = pivotIndex + 1;
+				// @Note: end is implied to remain the same, such as end = end 
+			}
+			else {
+				end = pivotIndex + 1;
+				// @Note: start is implied to remain the same such as start = start
+			}
+
+			// The range should never be able to reach a size of 0
+			MIST_ASSERT(end - start >= 1);
+		}
+
+		size_t pivotIndex = start + (end - start) / 2;
+		const auto& pivot = (*destination)[pivotIndex];
+		if (element > pivot) {
+			destination->insert(std::begin(*destination) + pivotIndex + 1, element);
+		}
+		else {
+			destination->insert(std::begin(*destination) + pivotIndex, element);
+		}
+	}
+}
+
+
+
 
 
 // -Utility Methods-
