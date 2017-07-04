@@ -1,12 +1,14 @@
 #include "../../include/data-structures/RingBuffer.h"
 #include "../../include/algorithms/Sorting.h"
 #include "../../include/common/UtilityMacros.h"
+#include "../../include/utility/BitManipulations.h"
 
 #include <cassert>
 #include <iostream>
 #include <string>
 #include <vector>
 #include <list>
+#include <limits>
 #include <ctime>
 
 // Simple timer methods
@@ -191,10 +193,67 @@ void TestSorting() {
 	std::cout << "Sorting Tests Passed!" << std::endl;
 }
 
+void TestBitManipulations() {
+	size_t mask = 0;
+	// All the bits in the mask should be set, thus it's value should be max value
+	MIST_ASSERT(Mist::SetLowerBitRange(0) == 0);
+	MIST_ASSERT(Mist::SetLowerBitRange(1) == 1);
+	MIST_ASSERT(Mist::SetUpperBitRange(sizeof(size_t) * 8) == std::numeric_limits<size_t>::max());
+	MIST_ASSERT(Mist::SetBitRange(0, 2) == 3);
+	MIST_ASSERT(Mist::SetBitRange(0, 3) == 7);
+	MIST_ASSERT(Mist::SetBitRange(1, 3) == 6);
+	MIST_ASSERT(Mist::CountBitsSet(mask) == 0);
+	MIST_ASSERT(Mist::CountBitsSet(std::numeric_limits<size_t>::max()) == sizeof(size_t) * 8);
+	
+	size_t indices[] = { 0, 1 };
+	MIST_ASSERT(Mist::GetBitMask(indices, 1) == 1);
+	MIST_ASSERT(Mist::GetBitMask(indices, 2) == 3);
+	MIST_ASSERT(Mist::GetBitFlag(1) == 2);
+
+	mask = 0;
+	MIST_ASSERT(Mist::SetBit(mask, 0) == 1);
+	MIST_ASSERT(Mist::SetBit(mask, 1) == 2);
+	mask = Mist::SetBit(mask, 0);
+	MIST_ASSERT(Mist::SetBit(mask, 1) == 3);
+
+	MIST_ASSERT(Mist::UnsetBit(mask, 0) == 0);
+	MIST_ASSERT(Mist::ToggleBit(mask, 0) == 0);
+	MIST_ASSERT(Mist::ToggleBit(mask, 1) == 3);
+
+	MIST_ASSERT(Mist::IsBitSet(mask, 0) == true);
+	MIST_ASSERT(Mist::IsBitSet(mask, 1) == false);
+
+	MIST_ASSERT(Mist::GetBitRange(std::numeric_limits<size_t>::max(), 1, 3) == 6);
+	MIST_ASSERT(Mist::GetBitRange(std::numeric_limits<size_t>::max(), 0, 2) == 3);
+
+	size_t count;
+	size_t ind[sizeof(size_t) * 8];
+	Mist::GetIndividualBitIndices(mask, ind, &count);
+	MIST_ASSERT(count == 1 && ind[0] == 0);
+	Mist::GetIndividualBitIndices(3, ind, &count);
+	MIST_ASSERT(count == 2 && ind[0] == 0 && ind[1] == 1);
+
+	size_t masks[sizeof(size_t) * 8];
+	Mist::GetIndividualBitFlags(mask, masks, &count);
+	MIST_ASSERT(count == 1 && masks[0] == mask);
+
+	Mist::GetIndividualBitFlags(3, masks, &count);
+	MIST_ASSERT(count == 2 && masks[0] == 1 && masks[1] == 2);
+
+	Mist::GetIndividualBitFlags(5, masks, &count);
+	MIST_ASSERT(count == 2 && masks[0] == 1 && masks[1] == 4);
+
+	MIST_ASSERT(Mist::GetMaskDifferences(3, 1) == 2);
+	MIST_ASSERT(Mist::GetMaskDifferences(5, 3) == 2 + 4);
+	MIST_ASSERT(Mist::GetMaskDifferences(8, 2) == 2 + 8);
+
+}
+
 int main() {
 
 	TestRingBuffer();
 	TestSorting();
+	TestBitManipulations();
 
 	Pause();
 	return 0;
