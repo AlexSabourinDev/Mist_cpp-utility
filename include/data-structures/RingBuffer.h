@@ -7,18 +7,18 @@ MIST_NAMESPACE
 
 // A simple ring buffer implementation with a read and write head. 
 // @Details: The size requested in the tSize parameter is not the guaranteed amount that you can write
-//			 in one go. It typically will be tSize - 1, but that might change in time.
+//  in one go. It typically will be tSize - 1, but that might change in time.
 // @Example: A contrived example use would look like: 
 //
-//			 RingBuffer<int, 10> buffer;
-//			 int result = 0;
-//			 if(buffer.TryWrite(20)) {
-//				assert(buffer.TryRead(&result));
-//				std::cout << result << std::endl;
-//			 }
-//			 if(buffer.TryRead(&result) == false) {
-//				std::cout << "Nothing left to read" << std::endl;
-//			 }
+//		RingBuffer<int, 10> buffer;
+//		int result = 0;
+//		if(buffer.TryWrite(20)) {
+//			assert(buffer.TryRead(&result));
+//			std::cout << result << std::endl;
+//		 }
+//		if(buffer.TryRead(&result) == false) {
+//			std::cout << "Nothing left to read" << std::endl;
+//		}
 template< typename ValueType, size_t tSize >
 class RingBuffer {
 	static_assert(tSize > 1, "A Ring Buffer Cannot be of size 0. Is it a typo?");

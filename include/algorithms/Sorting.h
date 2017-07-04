@@ -31,7 +31,7 @@ namespace {
 // The main implementation of merge sort will not be recursive, it uses O(n) extra memory
 // the original collection is modified.
 // @Detail: the implementation uses a swapping read and write buffers of size n and swaps between
-//			them every change in block size.
+//   them every change in block size.
 template< typename CollectionType, typename IndexType = size_t >
 void MergeSort(CollectionType* collection) {
 
@@ -100,7 +100,7 @@ void MergeSort(CollectionType* collection) {
 // The main implementation of merge sort will not be recursive, it uses O(n) extra memory
 // the original collection is also modified. This is the version that sorts an array range
 // @Detail: the implementation uses a swapping read and write buffers of size n and swaps between
-//			them every change in block size.
+//   them every change in block size.
 template< typename ValueType, typename IndexType = size_t >
 void MergeSort(ValueType* begin, ValueType* end) {
 
@@ -255,7 +255,7 @@ void QuickSort(CollectionType* collection) {
 // in order to minimize the amount of comparisons
 template< typename SourceCollectionType, typename DestinationCollectionType = SourceCollectionType,
 	// @Template Condition: the destination collection must have a random access operator in order to
-	// use the binary version of insertion soth
+	//  use the binary version of insertion soth
 	typename ValueType = decltype(std::declval<DestinationCollectionType>()[0]) >
 void InsertionSort(SourceCollectionType&& source, DestinationCollectionType* destination) {
 	

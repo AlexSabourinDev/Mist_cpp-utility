@@ -4,7 +4,58 @@
 
 MIST_NAMESPACE
 
-// -Bit Methods-
+// -Public API-
+
+// Determine if a bit is set
+inline bool IsBitSet(const size_t mask, const size_t index);
+
+// Set a bit to on
+// the index must be less than sizeof(size_t) * 8
+inline size_t SetBit(const size_t mask, const size_t index);
+
+// Toggle a bit from on to off or off to on
+inline size_t ToggleBit(size_t mask, const size_t index);
+
+// Set a bit to off
+inline size_t UnsetBit(const size_t mask, const size_t index);
+
+// Determine if a flag is set inside of the mask
+inline bool IsFlagSet(const size_t mask, const size_t flag);
+
+// Determine how many flags are set in the mask
+inline size_t CountBitsSet(size_t bits);
+
+// Get all of the set flags in the mask as their own masks
+inline void GetIndividualBitFlags(size_t mask, size_t* bits, size_t* maskCount);
+
+// Get all of the indices of the bits set in the mask
+inline void GetIndividualBitIndices(const size_t mask, size_t* bitIndices, size_t* indexCount);
+
+// Get a bit mask of all the bit indices
+inline size_t GetBitMask(const size_t* bitIndices, const size_t indexCount);
+
+// Get a bit mask for the bit passed in
+inline size_t GetBitFlag(const size_t bitIndex);
+
+// Set all the bits from the range begin to end (exclusive)
+inline size_t SetBitRange(const size_t begin, const size_t end);
+
+inline size_t GetBitRange(const size_t mask, const size_t begin, const size_t end);
+
+// Set all the bits from 0 -> end (exclusive)
+// end must be less than sizeof(size_t) * 8
+inline size_t SetLowerBitRange(const size_t end);
+
+// Set all the bits from n -> end (inclusive)
+// end must more than 0
+inline size_t SetUpperBitRange(const size_t end);
+
+// Determine the differing bits between left and right
+inline size_t GetMaskDifferences(const size_t left, const size_t right);
+
+
+
+// -Implementation-
 
 // Determine if a bit is set
 inline bool IsBitSet(const size_t mask, const size_t index) {
