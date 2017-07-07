@@ -26,6 +26,31 @@ namespace {
 
 
 
+// -Utility Methods-
+
+// Determine if a collection is sorted in O(n) time
+template< typename IteratorType,
+// @Template condition: Assure that the iterator value type is comparable
+// @Detail: This uses declval and decltype in order to test an expression and see if the return type is correct
+typename TemplateCondition = typename std::enable_if<std::is_convertible<decltype(std::declval<typename std::iterator_traits<IteratorType>::value_type>() < std::declval<typename std::iterator_traits<IteratorType>::value_type>()), bool>::value>::type>
+bool IsSorted(IteratorType begin, IteratorType end) {
+	
+	// The begin and end iterators cannot be the same
+	MIST_ASSERT(begin != end);
+	
+	// Loop through all the elements and assure that the previous is lower than the next
+	IteratorType next = begin + 1;
+	for (; next != end; ++begin, ++next) {
+		// If the next element is lower than the beginning one, the collection isn't sorted
+		if (*next < *begin) {
+			return false;
+		}
+	}
+	return true;
+}
+
+
+
 // -Merge Sort-
 
 // The main implementation of merge sort will not be recursive, it uses O(n) extra memory
@@ -35,7 +60,7 @@ namespace {
 template< typename CollectionType, typename IndexType = size_t >
 void MergeSort(CollectionType* collection) {
 
-	const size_t collectionSize = std::size(*collection);
+	const size_t collectionSize = collection->size();
 	size_t blockSize = 1;
 
 	// Create our block iterators
@@ -281,12 +306,14 @@ void InsertionSort(SourceCollectionType&& source, DestinationCollectionType* des
 	//	If the element is larget than the start element, insert it after
 	//	If the element is less than or equal to the start element, insert it before
 
+	// The destination collection must be larger than 0
+	MIST_ASSERT(destination->size() > 0);
 	// The destination collection must be sorted before inserting into it
 	MIST_ASSERT(IsSorted(std::begin(*destination), std::end(*destination)));
 
 	for (const auto& element : source) {
 		size_t start = 0;
-		size_t end = std::size(*destination);
+		size_t end = destination->size();
 
 		while (end - start > 1) {
 
@@ -318,30 +345,6 @@ void InsertionSort(SourceCollectionType&& source, DestinationCollectionType* des
 			destination->insert(std::begin(*destination) + pivotIndex, element);
 		}
 	}
-}
-
-
-
-
-
-// -Utility Methods-
-
-// Determine if a collection is sorted in O(n) time
-template< typename IteratorType,
-	// @Template condition: Assure that the iterator value type is comparable
-	// @Detail: This uses declval and decltype in order to test an expression and see if the return type is correct
-	typename = std::enable_if<std::is_convertible<decltype(std::declval<typename std::iterator_traits<IteratorType>::value_type>() < std::declval<typename std::iterator_traits<IteratorType>::value_type>()), bool>::value>::type>
-bool IsSorted(IteratorType begin, IteratorType end) {
-
-	// Loop through all the elements and assure that the previous is lower than the next
-	IteratorType next = begin + 1;
-	for (; next != end; ++begin, ++next) {
-		// If the next element is lower than the beginning one, the collection isn't sorted
-		if (*next < *begin) {
-			return false;
-		}
-	}
-	return true;
 }
 
 
