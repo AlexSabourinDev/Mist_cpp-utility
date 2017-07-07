@@ -105,7 +105,7 @@ void TestSorting() {
 	const size_t SORTING_ITERATIONS = 100;
 	const size_t ELEMENT_COUNT = 100;
 
-	srand((size_t)time(0));
+	srand((unsigned int)time(0));
 
 	// -Test-
 	std::cout << "Sorting Test" << std::endl;
@@ -113,33 +113,47 @@ void TestSorting() {
 	std::cout << "Merge Sort" << std::endl;
 	// Test a vector's sorting
 	std::vector<size_t> m;
+	
+	// Test an array's sorting
+	size_t arr[ELEMENT_COUNT];
+	for (size_t i = 0; i < ELEMENT_COUNT; i++) {
+		arr[i] = rand() % ELEMENT_COUNT;
+	}
+	
+	// Merge sort the array
+	Mist::MergeSort(&arr[0], &arr[0] + ELEMENT_COUNT);
+	MIST_ASSERT(Mist::IsSorted(std::begin(arr), std::end(arr)));
 
-	BeginTimer();
+
+	double totalSortTime = 0.0;
 	for (size_t j = 0; j < SORTING_ITERATIONS; j++) {
 		m.clear();
 		for (size_t i = 0; i < ELEMENT_COUNT; i++) {
 			m.push_back(rand() % ELEMENT_COUNT);
 		}
 
+		BeginTimer();
 		// Merge sort the vector
 		Mist::MergeSort(&m);
+		totalSortTime += EndTimer();
+		
 		MIST_ASSERT(Mist::IsSorted(std::begin(m), std::end(m)));
 
-		// Test an array's sorting
-		size_t arr[ELEMENT_COUNT];
-		for (size_t i = 0; i < ELEMENT_COUNT; i++) {
-			arr[i] = rand() % ELEMENT_COUNT;
-		}
-
-		// Merge sort the array
-		Mist::MergeSort(&arr[0], &arr[0] + ELEMENT_COUNT);
-		MIST_ASSERT(Mist::IsSorted(std::begin(arr), std::end(arr)));
 	}
-	std::cout << EndTimer() << "ms" << std::endl;
+	std::cout << totalSortTime << "ms" << std::endl;
 
 	std::cout << "Quick Sort" << std::endl;
 
-	BeginTimer();
+	
+	for (size_t i = 0; i < ELEMENT_COUNT; i++) {
+		arr[i] = rand() % ELEMENT_COUNT;
+	}
+	
+	// quick sort the vector
+	Mist::QuickSort(std::begin(arr), std::end(arr));
+	MIST_ASSERT(Mist::IsSorted(std::begin(arr), std::end(arr)));
+	
+	totalSortTime = 0.0;
 	// Run the simulation multiple times
 	for (size_t j = 0; j < SORTING_ITERATIONS; j++) {
 		// clear the vector and restart
@@ -148,31 +162,24 @@ void TestSorting() {
 			m.push_back(rand() % ELEMENT_COUNT);
 		}
 
+		BeginTimer();
 		// quick sort the vector
 		Mist::QuickSort(&m);
+		totalSortTime += EndTimer();
+		
 		MIST_ASSERT(Mist::IsSorted(std::begin(m), std::end(m)));
-
-		// Test an array's sorting
-		size_t arr[ELEMENT_COUNT];
-		for (size_t i = 0; i < ELEMENT_COUNT; i++) {
-			arr[i] = rand() % ELEMENT_COUNT;
-		}
-
-		// quick sort the vector
-		Mist::QuickSort(std::begin(arr), std::end(arr));
-		MIST_ASSERT(Mist::IsSorted(std::begin(arr), std::end(arr)));
 	}
 
-	std::cout << EndTimer() << "ms" << std::endl;
+	std::cout << totalSortTime << "ms" << std::endl;
 
 	std::cout << "Insertion Sort" << std::endl;
 
-	BeginTimer();
+	totalSortTime = 0.0;
 	// Run the simulation multiple times
 	for (size_t j = 0; j < SORTING_ITERATIONS; j++) {
 		// create a sorted vector of n elements
 		std::vector<size_t> sortedVector;
-		const size_t SORTED_ELEMENT_COUNT = 10;
+		const size_t SORTED_ELEMENT_COUNT = ELEMENT_COUNT;
 		for (int i = 0; i < SORTED_ELEMENT_COUNT; i++) {
 			sortedVector.push_back(i);
 		}
@@ -183,12 +190,15 @@ void TestSorting() {
 			m.push_back(rand() % ELEMENT_COUNT);
 		}
 
+		BeginTimer();
 		Mist::InsertionSort(m, &sortedVector);
+		totalSortTime += EndTimer();
+		
 		MIST_ASSERT(Mist::IsSorted(std::begin(sortedVector), std::end(sortedVector)));
 
 	}
 
-	std::cout << EndTimer() << "ms" << std::endl;
+	std::cout << totalSortTime << "ms" << std::endl;
 
 	std::cout << "Sorting Tests Passed!" << std::endl;
 }
