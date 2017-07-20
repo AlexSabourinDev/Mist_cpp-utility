@@ -74,7 +74,7 @@ bool Type::Is() const {
 
 template< typename... CoreTypes >
 void Type::DefineTypes() {
-	m_Types = std::make_unique<Detail::TypeDeclarations<CoreTypes...>>();
+	m_Types.reset(new Detail::TypeDeclarations<CoreTypes...>());
 }
 
 Type::Type(Type&& move) {

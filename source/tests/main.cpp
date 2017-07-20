@@ -84,7 +84,7 @@ void TestReflection() {
 	
 	// -Delegate-
 
-	int data = 0;
+	size_t data = 0;
 	Mist::Delegate del([&]() { data = CHANGE_TARGET; });
 	del.Invoke();
 
@@ -282,20 +282,20 @@ void TestSorting() {
 }
 
 void TestBitManipulations() {
-	size_t mask = 0;
+	Mist::BitField mask = 0;
 	// All the bits in the mask should be set, thus it's value should be max value
 	MIST_ASSERT(Mist::SetLowerBitRange(0) == 0);
 	MIST_ASSERT(Mist::SetLowerBitRange(1) == 1);
-	MIST_ASSERT(Mist::SetUpperBitRange(sizeof(size_t) * 8) == std::numeric_limits<size_t>::max());
+	MIST_ASSERT(Mist::SetUpperBitRange(sizeof(Mist::BitField) * 8) == std::numeric_limits<Mist::BitField>::max());
 	MIST_ASSERT(Mist::SetBitRange(0, 2) == 3);
 	MIST_ASSERT(Mist::SetBitRange(0, 3) == 7);
 	MIST_ASSERT(Mist::SetBitRange(1, 3) == 6);
 	MIST_ASSERT(Mist::CountBitsSet(mask) == 0);
-	MIST_ASSERT(Mist::CountBitsSet(std::numeric_limits<size_t>::max()) == sizeof(size_t) * 8);
+	MIST_ASSERT(Mist::CountBitsSet(std::numeric_limits<Mist::BitField>::max()) == sizeof(Mist::BitField) * 8);
 	
-	size_t indices[] = { 0, 1 };
-	MIST_ASSERT(Mist::GetBitMask(indices, 1) == 1);
-	MIST_ASSERT(Mist::GetBitMask(indices, 2) == 3);
+	Mist::BitField indices[] = { 0, 1 };
+	MIST_ASSERT(Mist::GetBitMask(&indices[0], 1) == 1);
+	MIST_ASSERT(Mist::GetBitMask(&indices[0], 2) == 3);
 	MIST_ASSERT(Mist::GetBitFlag(1) == 2);
 
 	mask = 0;
@@ -311,17 +311,17 @@ void TestBitManipulations() {
 	MIST_ASSERT(Mist::IsBitSet(mask, 0) == true);
 	MIST_ASSERT(Mist::IsBitSet(mask, 1) == false);
 
-	MIST_ASSERT(Mist::GetBitRange(std::numeric_limits<size_t>::max(), 1, 3) == 6);
-	MIST_ASSERT(Mist::GetBitRange(std::numeric_limits<size_t>::max(), 0, 2) == 3);
+	MIST_ASSERT(Mist::GetBitRange(std::numeric_limits<Mist::BitField>::max(), 1, 3) == 6);
+	MIST_ASSERT(Mist::GetBitRange(std::numeric_limits<Mist::BitField>::max(), 0, 2) == 3);
 
-	size_t count;
-	size_t ind[sizeof(size_t) * 8];
+	Mist::BitField count;
+	Mist::BitField ind[sizeof(size_t) * 8];
 	Mist::GetIndividualBitIndices(mask, ind, &count);
 	MIST_ASSERT(count == 1 && ind[0] == 0);
 	Mist::GetIndividualBitIndices(3, ind, &count);
 	MIST_ASSERT(count == 2 && ind[0] == 0 && ind[1] == 1);
 
-	size_t masks[sizeof(size_t) * 8];
+	Mist::BitField masks[sizeof(size_t) * 8];
 	Mist::GetIndividualBitFlags(mask, masks, &count);
 	MIST_ASSERT(count == 1 && masks[0] == mask);
 
