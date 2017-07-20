@@ -12,6 +12,7 @@
 #include <list>
 #include <limits>
 #include <ctime>
+#include <memory>
 
 // Simple timer methods
 std::clock_t s_StartTime;
@@ -30,9 +31,15 @@ void Pause() {
 	std::cin >> c;
 }
 
+size_t ReturnNumber(size_t num) {
+	return num;
+}
+
 void TestReflection() {
 
 	std::cout << "Reflection Test" << std::endl;
+
+	// -Type-
 
 	Mist::Type type;
 	type.DefineTypes<int>();
@@ -45,13 +52,56 @@ void TestReflection() {
 	MIST_ASSERT(type.Is<int>() == false);
 	MIST_ASSERT(type.Is<float>());
 
-	Mist::Type returnType;
-	Mist::Type argumentTypes;
+	std::unique_ptr<Mist::Detail::Callback> callback(Mist::Detail::MakeCallback(Pause));
+	MIST_ASSERT(Mist::Detail::HasDefinition<void>(callback.get()));
+	MIST_ASSERT((Mist::Detail::HasDefinition<size_t, size_t>(callback.get())) == false);
 
-	std::tie(returnType, argumentTypes) = Mist::Detail::ExtractCallbackInfo(&Pause);
+	// -Callback-
 
-	MIST_ASSERT(returnType.Is<void>());
-	MIST_ASSERT(argumentTypes.Is<>());
+	const size_t CHANGE_TARGET = 1;
+	size_t changed;
+	std::unique_ptr<Mist::Detail::Callback> lambda(Mist::Detail::MakeCallback([&changed, CHANGE_TARGET]() { changed = CHANGE_TARGET; }));
+
+	MIST_ASSERT(Mist::Detail::HasDefinition<void>(lambda.get()));
+	MIST_ASSERT((Mist::Detail::HasDefinition<size_t, size_t>(lambda.get())) == false);
+
+	Mist::Detail::CallbackInterface<void>* call = Mist::Detail::Cast<void>(lambda.get());
+	call->Invoke();
+
+	MIST_ASSERT(changed == CHANGE_TARGET);
+
+	changed = 0;
+	auto l = [&changed](size_t j) { changed = j; };
+	std::unique_ptr<Mist::Detail::Callback> savedLambda(Mist::Detail::MakeCallback(l));
+
+	MIST_ASSERT((Mist::Detail::HasDefinition<void, size_t>(savedLambda.get())));
+	MIST_ASSERT((Mist::Detail::HasDefinition<size_t, size_t>(savedLambda.get())) == false);
+
+	Mist::Detail::CallbackInterface<void, size_t>* c = Mist::Detail::Cast<void, size_t>(savedLambda.get());
+	c->Invoke(CHANGE_TARGET);
+
+	MIST_ASSERT(changed == CHANGE_TARGET);
+	
+	// -Delegate-
+
+	int data = 0;
+	Mist::Delegate del([&]() { data = CHANGE_TARGET; });
+	del.Invoke();
+
+	MIST_ASSERT(data == CHANGE_TARGET);
+
+	data = 0;
+	Mist::Delegate del2([](size_t j) { return j; });
+	data = del2.Invoke<size_t, size_t>(CHANGE_TARGET);
+
+	MIST_ASSERT(data == CHANGE_TARGET);
+
+	data = 0;
+	Mist::Delegate del3(&ReturnNumber);
+	data = del3.Invoke<size_t, size_t>(CHANGE_TARGET);
+
+	MIST_ASSERT(data == CHANGE_TARGET);
+
 
 	std::cout << "Reflection Test Passed!" << std::endl;
 

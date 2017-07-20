@@ -7,17 +7,7 @@
 MIST_NAMESPACE
 
 namespace Detail {
-
-	// Define a base class for the type data in order to
-	// hold it homogenously
-	class TypeContainer {
-	public:
-		virtual ~TypeContainer() = default;
-	};
-
-	// Define the derived class that actually holds the type data
-	template< typename... Types >
-	class TypeDeclarations : public TypeContainer {};
+	class TypeContainer;
 }
 
 class Type {
@@ -35,7 +25,7 @@ public:
 	// Determine if this type is actually
 	// the core types requested
 	template< typename... CoreTypes >
-	bool Is();
+	bool Is() const;
 
 	// -Structors-
 
@@ -53,11 +43,24 @@ private:
 	std::unique_ptr<Detail::TypeContainer> m_Types;
 };
 
+namespace Detail {
+
+	// Define a base class for the type data in order to
+	// hold it homogenously
+	class TypeContainer {
+	public:
+		virtual ~TypeContainer() = default;
+	};
+
+	// Define the derived class that actually holds the type data
+	template< typename... Types >
+	class TypeDeclarations : public TypeContainer {};
+}
 
 // -Implementation-
 
 template< typename... CoreTypes >
-bool Type::Is() {
+bool Type::Is() const {
 	// Please invoke Type::DefineTypes before calling Is
 	MIST_ASSERT(m_Types != nullptr);
 
