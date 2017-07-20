@@ -314,7 +314,7 @@ void TestBitManipulations() {
 	MIST_ASSERT(Mist::GetBitRange(std::numeric_limits<Mist::BitField>::max(), 1, 3) == 6);
 	MIST_ASSERT(Mist::GetBitRange(std::numeric_limits<Mist::BitField>::max(), 0, 2) == 3);
 
-	Mist::BitField count;
+	size_t count;
 	Mist::BitField ind[sizeof(size_t) * 8];
 	Mist::GetIndividualBitIndices(mask, ind, &count);
 	MIST_ASSERT(count == 1 && ind[0] == 0);

@@ -29,13 +29,13 @@ inline bool IsFlagSet(const BitField mask, const BitField flag);
 inline BitField CountBitsSet(BitField bits);
 
 // Get all of the set flags in the mask as their own masks
-inline void GetIndividualBitFlags(BitField mask, BitField* bits, BitField* maskCount);
+inline void GetIndividualBitFlags(BitField mask, BitField* bits, size_t* maskCount);
 
 // Get all of the indices of the bits set in the mask
-inline void GetIndividualBitIndices(const BitField mask, BitField* bitIndices, BitField* indexCount);
+inline void GetIndividualBitIndices(const BitField mask, BitField* bitIndices, size_t* indexCount);
 
 // Get a bit mask of all the bit indices
-inline BitField GetBitMask(const BitField* bitIndices, const BitField indexCount);
+inline BitField GetBitMask(const BitField* bitIndices, const size_t indexCount);
 
 // Get a bit mask for the bit passed in
 inline BitField GetBitFlag(const BitField bitIndex);
@@ -107,7 +107,7 @@ inline BitField CountBitsSet(BitField bits) {
 }
 
 // Get all of the set flags in the mask as their own masks
-inline void GetIndividualBitFlags(BitField mask, BitField* bits, BitField* maskCount) {
+inline void GetIndividualBitFlags(BitField mask, BitField* bits, size_t* maskCount) {
 	MIST_ASSERT(bits != nullptr);
 	MIST_ASSERT(maskCount != nullptr);
 
@@ -126,7 +126,7 @@ inline void GetIndividualBitFlags(BitField mask, BitField* bits, BitField* maskC
 }
 
 // Get all of the indices of the bits set in the mask
-inline void GetIndividualBitIndices(const BitField mask, BitField* bitIndices, BitField* indexCount) {
+inline void GetIndividualBitIndices(const BitField mask, BitField* bitIndices, size_t* indexCount) {
 	MIST_ASSERT(bitIndices != nullptr);
 	MIST_ASSERT(indexCount != nullptr);
 
@@ -142,11 +142,11 @@ inline void GetIndividualBitIndices(const BitField mask, BitField* bitIndices, B
 }
 
 // Get a bit mask of all the bit indices
-inline BitField GetBitMask(const BitField* bitIndices, const BitField indexCount) {
+inline BitField GetBitMask(const BitField* bitIndices, const size_t indexCount) {
 	MIST_ASSERT(bitIndices != nullptr);
 
 	BitField mask = 0;
-	for (BitField i = 0; i < indexCount; ++i) {
+	for (size_t i = 0; i < indexCount; ++i) {
 		// index must be less than sizeof(BitField) * 8
 		MIST_ASSERT(bitIndices[i] < sizeof(BitField) * 8);
 
