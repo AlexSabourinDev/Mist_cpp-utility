@@ -26,7 +26,7 @@ inline BitField UnsetBit(const BitField mask, const BitField index);
 inline bool IsFlagSet(const BitField mask, const BitField flag);
 
 // Determine how many flags are set in the mask
-inline BitField CountBitsSet(BitField bits);
+inline size_t CountBitsSet(BitField bits);
 
 // Get all of the set flags in the mask as their own masks
 inline void GetIndividualBitFlags(BitField mask, BitField* bits, size_t* maskCount);
@@ -95,7 +95,7 @@ inline bool IsFlagSet(const BitField mask, const BitField flag) {
 }
 
 // Determine how many flags are set in the mask
-inline BitField CountBitsSet(BitField bits) {
+inline size_t CountBitsSet(BitField bits) {
 	BitField count = 0;
 	// While we still have bits left
 	while (bits != 0) {
