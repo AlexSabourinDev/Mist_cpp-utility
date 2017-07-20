@@ -4,6 +4,7 @@
 #include "../../include/utility/BitManipulations.h"
 #include "../../include/reflection/Type.h"
 #include "../../include/reflection/Delegate.h"
+#include "../../include/utility/Hashing.h"
 
 #include <cassert>
 #include <iostream>
@@ -105,6 +106,68 @@ void TestReflection() {
 
 	std::cout << "Reflection Test Passed!" << std::endl;
 
+}
+
+void TestHash() {
+	
+	std::cout << "Hashing Test" << std::endl;
+	
+	std::vector<uint64_t> results;
+	results.push_back(Mist::Hash("lol"));
+	results.push_back(Mist::Hash("lol0"));
+	results.push_back(Mist::Hash("loldfsdaf"));
+	results.push_back(Mist::Hash("loldsafdsafdsafdsafdsafdsa"));
+	results.push_back(Mist::Hash("logfrwgvcxzgrl"));
+	results.push_back(Mist::Hash("lothrtjn xgtbtbreyl"));
+	results.push_back(Mist::Hash("logdsafhudesrv jklb l"));
+	results.push_back(Mist::Hash("lot5nbunel"));
+	results.push_back(Mist::Hash("lobtyrbtsbgtdsabdtl"));
+	results.push_back(Mist::Hash("loniuvgtehrgpb5gs8yniotbsrl"));
+	results.push_back(Mist::Hash("lobtrenbpvznurfbhobntrwgal"));
+	results.push_back(Mist::Hash("lolngjurenpwijnjivupr"));
+	results.push_back(Mist::Hash("looooofodfsaofdsafodasfodl"));
+	results.push_back(Mist::Hash("lonyetnusjrnfioNSfNOUfol"));
+	results.push_back(Mist::Hash("enbpvznurfbh"));
+	results.push_back(Mist::Hash("odfsaofdsafodasfodl"));
+	results.push_back(Mist::Hash("lonyetnusjrnfioN"));
+	results.push_back(Mist::Hash("loetnusupr"));
+	results.push_back(Mist::Hash("lngjureol"));
+	results.push_back(Mist::Hash("odfiukmmtnrhb"));
+	results.push_back(Mist::Hash("bytbdsfaazrs4b z"));
+	results.push_back(Mist::Hash("jkoytmnkodtynd"));
+	results.push_back(Mist::Hash("vrehivuorsabeFORNZeu i"));
+	results.push_back(Mist::Hash("foo"));
+	results.push_back(Mist::Hash("bar"));
+	results.push_back(Mist::Hash("vector"));
+	results.push_back(Mist::Hash("string"));
+	results.push_back(Mist::Hash("hash"));
+	results.push_back(Mist::Hash("m_hello"));
+	results.push_back(Mist::Hash("m_Lol"));
+	results.push_back(Mist::Hash("m_Hi"));
+	results.push_back(Mist::Hash("m_Value"));
+	results.push_back(Mist::Hash("m_Result"));
+	results.push_back(Mist::Hash("m_ShouldRun"));
+	results.push_back(Mist::Hash("m_IsActive"));
+	results.push_back(Mist::Hash("m_HasLife"));
+	results.push_back(Mist::Hash("m_ShouldBe"));
+	results.push_back(Mist::Hash("aaaaaaa"));
+	results.push_back(Mist::Hash("aaaa"));
+	results.push_back(Mist::Hash("aaaaaaaaaaa"));
+	results.push_back(Mist::Hash("aaaaaaaaa"));
+
+	
+	for(auto& i : results) {
+		std::cout << i << std::endl;
+		for(auto& j : results) {
+			if(&i != &j)
+			{
+				MIST_ASSERT(i != j);
+			}
+		}
+	}
+	
+	std::cout << "Hashing Test Passed!" << std::endl;
+	
 }
 
 void TestRingBuffer() {
@@ -343,6 +406,7 @@ int main() {
 	TestSorting();
 	TestBitManipulations();
 	TestReflection();
+	TestHash();
 
 	Pause();
 	return 0;
