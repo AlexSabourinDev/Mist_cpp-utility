@@ -12,6 +12,10 @@ namespace Detail {
 	class Callback;
 }
 
+// The delegate class is a generic wrapper around
+// a method of any signature. The method is then called using the invoke method.
+// The delegate class handles lambdas and global methods in a homogeneous interface.
+// @Detail: The signature of the invoke method must match the signature of the inner method.
 class Delegate {
 
 public:

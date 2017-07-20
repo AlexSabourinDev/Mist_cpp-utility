@@ -10,6 +10,8 @@ namespace Detail {
 	class TypeContainer;
 }
 
+// The type class is a class that holds compile time type information that can be queried
+// Using the Is method, the Type class can be held in a container with other Types
 class Type {
 
 public:
