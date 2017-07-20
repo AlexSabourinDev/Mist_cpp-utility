@@ -44,12 +44,10 @@ void Usage()
 Impl:
 
 Type
-	IsType<Types...>() : bool
+	Is<Types...>() : bool
 	CoreType : TypeImpl
 
 Delegate
-	ArgTypes : Type
-	ReturnType : Type
 	Method : DelegateImpl
 	Invoke<ReturnType, Args...>(Args...) : ReturnType
 
