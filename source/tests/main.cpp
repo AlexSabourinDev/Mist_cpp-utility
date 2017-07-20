@@ -2,6 +2,8 @@
 #include "../../include/algorithms/Sorting.h"
 #include "../../include/common/UtilityMacros.h"
 #include "../../include/utility/BitManipulations.h"
+#include "../../include/reflection/Type.h"
+#include "../../include/reflection/Delegate.h"
 
 #include <cassert>
 #include <iostream>
@@ -28,6 +30,32 @@ void Pause() {
 	std::cin >> c;
 }
 
+void TestReflection() {
+
+	std::cout << "Reflection Test" << std::endl;
+
+	Mist::Type type;
+	type.DefineTypes<int>();
+
+	MIST_ASSERT(type.Is<int>());
+	MIST_ASSERT(type.Is<float>() == false);
+
+	type.DefineTypes<float>();
+
+	MIST_ASSERT(type.Is<int>() == false);
+	MIST_ASSERT(type.Is<float>());
+
+	Mist::Type returnType;
+	Mist::Type argumentTypes;
+
+	std::tie(returnType, argumentTypes) = Mist::Detail::ExtractCallbackInfo(&Pause);
+
+	MIST_ASSERT(returnType.Is<void>());
+	MIST_ASSERT(argumentTypes.Is<>());
+
+	std::cout << "Reflection Test Passed!" << std::endl;
+
+}
 
 void TestRingBuffer() {
 	// -Test-
@@ -264,6 +292,7 @@ int main() {
 	TestRingBuffer();
 	TestSorting();
 	TestBitManipulations();
+	TestReflection();
 
 	Pause();
 	return 0;

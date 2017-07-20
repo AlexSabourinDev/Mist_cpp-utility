@@ -16,7 +16,7 @@
 // Possibly: Limited amount of memory sort, external sorting
 MIST_NAMESPACE
 
-namespace {
+namespace Detail {
 	// Internal method for minimum of two values
 	template< typename MinType >
 	MinType Min(MinType left, MinType right) {
@@ -87,7 +87,7 @@ void MergeSort(CollectionType* collection) {
 			// Select our next blocks
 			firstNext = (i + 1) * blockSize;
 			// Assure that we don't go over the bounds of the collection
-			lastNext = Min((i + 2) * blockSize, collectionSize);
+			lastNext = Detail::Min((i + 2) * blockSize, collectionSize);
 
 			// Loop through both ranges and determine which part goes into the write first
 			// keep going until we've written all of them
@@ -156,7 +156,7 @@ void MergeSort(ValueType* begin, ValueType* end) {
 			// Select our next blocks
 			firstNext = (i + 1) * blockSize;
 			// Assure that we don't go over the bounds of the collection
-			lastNext = Min((i + 2) * blockSize, collectionSize);
+			lastNext = Detail::Min((i + 2) * blockSize, collectionSize);
 
 			// Loop through both ranges and determine which part goes into the write first
 			// keep going until we've written all of them
