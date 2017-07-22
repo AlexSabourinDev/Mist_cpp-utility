@@ -7,6 +7,7 @@
 #include "../../include/utility/Hashing.h"
 #include "../../include/reflection/MetaData.h"
 #include "../../include/reflection/MethodInfo.h"
+#include "../../include/reflection/MemberInfo.h"
 
 #include <cassert>
 #include <iostream>
@@ -139,7 +140,7 @@ void TestReflection() {
 		size_t Value() { std::cout << "TestMethodInfo::Value" << std::endl; return CHANGE_TARGET; }
 		size_t Repeat(size_t value) { return value; }
 
-		size_t m_Value;
+		size_t m_Value = CHANGE_TARGET;
 	};
 
 	TestMethodInfo obj;
@@ -155,6 +156,17 @@ void TestReflection() {
 
 	MIST_ASSERT(*meta->Get<size_t>("Property") == CHANGE_TARGET);
 
+	// -MemberInfo-
+
+	TestMethodInfo memberTest;
+
+	Mist::MemberInfo member(&TestMethodInfo::m_Value);
+	MIST_ASSERT(*member.Get<size_t>(&memberTest) == CHANGE_TARGET);
+
+	Mist::MetaData* memberMera = member.GetMetaData();
+	memberMera->Add<size_t>("Property", CHANGE_TARGET);
+
+	MIST_ASSERT(*memberMera->Get<size_t>("Property") == CHANGE_TARGET);
 
 
 	std::cout << "Reflection Test Passed!" << std::endl;
