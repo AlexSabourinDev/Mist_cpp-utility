@@ -6,6 +6,7 @@
 #include "../../include/reflection/Delegate.h"
 #include "../../include/utility/Hashing.h"
 #include "../../include/reflection/MetaData.h"
+#include "../../include/reflection/MethodInfo.h"
 
 #include <cassert>
 #include <iostream>
@@ -130,6 +131,31 @@ void TestReflection() {
 	MIST_ASSERT(metaData.Add(Mist::HashID(1), TestClass())->data == META_DATA_VALUE);
 	MIST_ASSERT(metaData.Has(Mist::HashID(1)));
 	MIST_ASSERT(metaData.Get<TestClass>(Mist::HashID(1))->data == META_DATA_VALUE);
+	
+	// -MethodInfo-
+
+	struct TestMethodInfo {
+
+		size_t Value() { std::cout << "TestMethodInfo::Value" << std::endl; return CHANGE_TARGET; }
+		size_t Repeat(size_t value) { return value; }
+
+		size_t m_Value;
+	};
+
+	TestMethodInfo obj;
+
+	Mist::MethodInfo method(&TestMethodInfo::Value);
+	MIST_ASSERT(method.Invoke<size_t>(&obj) == CHANGE_TARGET);
+
+	Mist::MethodInfo repeatMethod(&TestMethodInfo::Repeat);
+	MIST_ASSERT(repeatMethod.Invoke<size_t>(&obj, CHANGE_TARGET) == CHANGE_TARGET);
+
+	Mist::MetaData* meta = repeatMethod.GetMetaData();
+	meta->Add<size_t>("Property", CHANGE_TARGET);
+
+	MIST_ASSERT(*meta->Get<size_t>("Property") == CHANGE_TARGET);
+
+
 
 	std::cout << "Reflection Test Passed!" << std::endl;
 
