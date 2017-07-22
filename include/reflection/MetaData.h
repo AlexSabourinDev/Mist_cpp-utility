@@ -8,6 +8,9 @@
 
 MIST_NAMESPACE
 
+// The meta data class will hold all of the meta data associated to a particular
+// info in the reflection table.
+// @Detail: When requesting a type, the type must match the insterted type exactly or else an assert will be hit.
 class MetaData {
 
 public:
