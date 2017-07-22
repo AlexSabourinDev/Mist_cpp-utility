@@ -127,9 +127,9 @@ void TestReflection() {
 		size_t data = META_DATA_VALUE;
 	};
 
-	MIST_ASSERT(metaData.Add(Mist::HashID("Test"), TestClass())->data == META_DATA_VALUE);
-	MIST_ASSERT(metaData.Has(Mist::HashID("Test")));
-	MIST_ASSERT(metaData.Get<TestClass>("Test")->data == META_DATA_VALUE);
+	MIST_ASSERT(metaData.Add(Mist::HashID(1), TestClass())->data == META_DATA_VALUE);
+	MIST_ASSERT(metaData.Has(Mist::HashID(1)));
+	MIST_ASSERT(metaData.Get<TestClass>(Mist::HashID(1))->data == META_DATA_VALUE);
 
 	std::cout << "Reflection Test Passed!" << std::endl;
 
