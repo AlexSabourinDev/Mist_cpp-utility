@@ -10,6 +10,8 @@ namespace Detail {
 	class AnyImpl;
 }
 
+// The Any class holds a variable of any type.
+// To retrieve the value however, the type requested must match the type of the value exactly.
 class Any {
 
 public:
