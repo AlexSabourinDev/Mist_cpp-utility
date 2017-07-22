@@ -5,6 +5,7 @@
 #include "../../include/reflection/Type.h"
 #include "../../include/reflection/Delegate.h"
 #include "../../include/utility/Hashing.h"
+#include "../../include/reflection/MetaData.h"
 
 #include <cassert>
 #include <iostream>
@@ -103,6 +104,32 @@ void TestReflection() {
 
 	MIST_ASSERT(data == CHANGE_TARGET);
 
+	// MetaData
+
+	const size_t META_DATA_VALUE = 5;
+	
+	Mist::MetaData metaData;
+
+	MIST_ASSERT(metaData.Has("Lol") == false);
+	MIST_ASSERT((*metaData.Add<size_t>("Foo", META_DATA_VALUE)) == META_DATA_VALUE);
+	MIST_ASSERT(metaData.Has("Foo"));
+	MIST_ASSERT((*metaData.Get<size_t>("Foo")) == META_DATA_VALUE);
+
+	metaData.Add("Hi", META_DATA_VALUE);
+	metaData.Add("This", META_DATA_VALUE);
+
+	for (auto& i : metaData) {
+		std::cout << i.first << ":" << *Mist::Cast<size_t>(i.second) << std::endl;
+		MIST_ASSERT(*Mist::Cast<size_t>(i.second) == META_DATA_VALUE);
+	}
+
+	struct TestClass {
+		size_t data = META_DATA_VALUE;
+	};
+
+	MIST_ASSERT(metaData.Add(Mist::HashID("Test"), TestClass())->data == META_DATA_VALUE);
+	MIST_ASSERT(metaData.Has(Mist::HashID("Test")));
+	MIST_ASSERT(metaData.Get<TestClass>("Test")->data == META_DATA_VALUE);
 
 	std::cout << "Reflection Test Passed!" << std::endl;
 
@@ -113,51 +140,50 @@ void TestHash() {
 	std::cout << "Hashing Test" << std::endl;
 	
 	std::vector<uint64_t> results;
-	results.push_back(Mist::Hash("lol"));
-	results.push_back(Mist::Hash("lol0"));
-	results.push_back(Mist::Hash("loldfsdaf"));
-	results.push_back(Mist::Hash("loldsafdsafdsafdsafdsafdsa"));
-	results.push_back(Mist::Hash("logfrwgvcxzgrl"));
-	results.push_back(Mist::Hash("lothrtjn xgtbtbreyl"));
-	results.push_back(Mist::Hash("logdsafhudesrv jklb l"));
-	results.push_back(Mist::Hash("lot5nbunel"));
-	results.push_back(Mist::Hash("lobtyrbtsbgtdsabdtl"));
-	results.push_back(Mist::Hash("loniuvgtehrgpb5gs8yniotbsrl"));
-	results.push_back(Mist::Hash("lobtrenbpvznurfbhobntrwgal"));
-	results.push_back(Mist::Hash("lolngjurenpwijnjivupr"));
-	results.push_back(Mist::Hash("looooofodfsaofdsafodasfodl"));
-	results.push_back(Mist::Hash("lonyetnusjrnfioNSfNOUfol"));
-	results.push_back(Mist::Hash("enbpvznurfbh"));
-	results.push_back(Mist::Hash("odfsaofdsafodasfodl"));
-	results.push_back(Mist::Hash("lonyetnusjrnfioN"));
-	results.push_back(Mist::Hash("loetnusupr"));
-	results.push_back(Mist::Hash("lngjureol"));
-	results.push_back(Mist::Hash("odfiukmmtnrhb"));
-	results.push_back(Mist::Hash("bytbdsfaazrs4b z"));
-	results.push_back(Mist::Hash("jkoytmnkodtynd"));
-	results.push_back(Mist::Hash("vrehivuorsabeFORNZeu i"));
-	results.push_back(Mist::Hash("foo"));
-	results.push_back(Mist::Hash("bar"));
-	results.push_back(Mist::Hash("vector"));
-	results.push_back(Mist::Hash("string"));
-	results.push_back(Mist::Hash("hash"));
-	results.push_back(Mist::Hash("m_hello"));
-	results.push_back(Mist::Hash("m_Lol"));
-	results.push_back(Mist::Hash("m_Hi"));
-	results.push_back(Mist::Hash("m_Value"));
-	results.push_back(Mist::Hash("m_Result"));
-	results.push_back(Mist::Hash("m_ShouldRun"));
-	results.push_back(Mist::Hash("m_IsActive"));
-	results.push_back(Mist::Hash("m_HasLife"));
-	results.push_back(Mist::Hash("m_ShouldBe"));
-	results.push_back(Mist::Hash("aaaaaaa"));
-	results.push_back(Mist::Hash("aaaa"));
-	results.push_back(Mist::Hash("aaaaaaaaaaa"));
-	results.push_back(Mist::Hash("aaaaaaaaa"));
+	results.push_back(Mist::Hash64("lol"));
+	results.push_back(Mist::Hash64("lol0"));
+	results.push_back(Mist::Hash64("loldfsdaf"));
+	results.push_back(Mist::Hash64("loldsafdsafdsafdsafdsafdsa"));
+	results.push_back(Mist::Hash64("logfrwgvcxzgrl"));
+	results.push_back(Mist::Hash64("lothrtjn xgtbtbreyl"));
+	results.push_back(Mist::Hash64("logdsafhudesrv jklb l"));
+	results.push_back(Mist::Hash64("lot5nbunel"));
+	results.push_back(Mist::Hash64("lobtyrbtsbgtdsabdtl"));
+	results.push_back(Mist::Hash64("loniuvgtehrgpb5gs8yniotbsrl"));
+	results.push_back(Mist::Hash64("lobtrenbpvznurfbhobntrwgal"));
+	results.push_back(Mist::Hash64("lolngjurenpwijnjivupr"));
+	results.push_back(Mist::Hash64("looooofodfsaofdsafodasfodl"));
+	results.push_back(Mist::Hash64("lonyetnusjrnfioNSfNOUfol"));
+	results.push_back(Mist::Hash64("enbpvznurfbh"));
+	results.push_back(Mist::Hash64("odfsaofdsafodasfodl"));
+	results.push_back(Mist::Hash64("lonyetnusjrnfioN"));
+	results.push_back(Mist::Hash64("loetnusupr"));
+	results.push_back(Mist::Hash64("lngjureol"));
+	results.push_back(Mist::Hash64("odfiukmmtnrhb"));
+	results.push_back(Mist::Hash64("bytbdsfaazrs4b z"));
+	results.push_back(Mist::Hash64("jkoytmnkodtynd"));
+	results.push_back(Mist::Hash64("vrehivuorsabeFORNZeu i"));
+	results.push_back(Mist::Hash64("foo"));
+	results.push_back(Mist::Hash64("bar"));
+	results.push_back(Mist::Hash64("vector"));
+	results.push_back(Mist::Hash64("string"));
+	results.push_back(Mist::Hash64("hash"));
+	results.push_back(Mist::Hash64("m_hello"));
+	results.push_back(Mist::Hash64("m_Lol"));
+	results.push_back(Mist::Hash64("m_Hi"));
+	results.push_back(Mist::Hash64("m_Value"));
+	results.push_back(Mist::Hash64("m_Result"));
+	results.push_back(Mist::Hash64("m_ShouldRun"));
+	results.push_back(Mist::Hash64("m_IsActive"));
+	results.push_back(Mist::Hash64("m_HasLife"));
+	results.push_back(Mist::Hash64("m_ShouldBe"));
+	results.push_back(Mist::Hash64("aaaaaaa"));
+	results.push_back(Mist::Hash64("aaaa"));
+	results.push_back(Mist::Hash64("aaaaaaaaaaa"));
+	results.push_back(Mist::Hash64("aaaaaaaaa"));
 
 	
 	for(auto& i : results) {
-		std::cout << i << std::endl;
 		for(auto& j : results) {
 			if(&i != &j)
 			{

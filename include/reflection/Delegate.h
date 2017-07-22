@@ -80,7 +80,7 @@ namespace Detail {
 		ReturnType Invoke(ArgumentTypes... arguments) override;
 
 		// -Structors-
-		CallbackDefinition(CallbackType callback);
+		explicit CallbackDefinition(CallbackType callback);
 
 	private:
 		CallbackType m_Callback;
