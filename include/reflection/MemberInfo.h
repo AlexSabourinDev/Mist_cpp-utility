@@ -29,6 +29,12 @@ public:
 	template< typename ClassType, typename MemberType >
 	explicit MemberInfo(MemberPointer<ClassType, MemberType> memberPointer);
 
+	MemberInfo(MemberInfo&) = delete;
+	MemberInfo& operator=(MemberInfo&) = delete;
+
+	MemberInfo(MemberInfo&& move);
+	MemberInfo& operator=(MemberInfo&& move);
+
 private:
 
 	MetaData m_MetaData;
@@ -40,6 +46,8 @@ private:
 
 template< typename MemberType, typename ClassType >
 MemberType* MemberInfo::Get(ClassType* object) {
+
+	MIST_ASSERT(object != nullptr);
 
 	return m_MemberRetrieval.Invoke<MemberType*, ClassType*>(object);
 }
@@ -54,6 +62,16 @@ MemberInfo::MemberInfo(MemberInfo::MemberPointer<ClassType, MemberType> memberPo
 	: m_MemberRetrieval([=](ClassType* object)->MemberType*{
 	
 		return &(object->*memberPointer);
-	}) {}
+	}) {
+}
+
+MemberInfo::MemberInfo(MemberInfo&& move) : m_MetaData(std::move(move.m_MetaData)), m_MemberRetrieval(std::move(move.m_MemberRetrieval)) {}
+
+MemberInfo& MemberInfo::operator=(MemberInfo&& move) {
+
+	m_MetaData = std::move(move.m_MetaData);
+	m_MemberRetrieval = std::move(move.m_MemberRetrieval);
+	return *this;
+}
 
 MIST_NAMESPACE_END

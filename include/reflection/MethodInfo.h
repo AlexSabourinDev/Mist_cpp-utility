@@ -31,6 +31,12 @@ public:
 	template< typename ClassType, typename ReturnType, typename... Arguments >
 	explicit MethodInfo(MethodPointer<ClassType, ReturnType, Arguments...> method);
 
+	MethodInfo(MethodInfo&) = delete;
+	MethodInfo& operator=(MethodInfo&) = delete;
+
+	MethodInfo(MethodInfo&& move);
+	MethodInfo& operator=(MethodInfo&& move);
+
 private:
 
 	MetaData m_MetaData;
@@ -42,6 +48,8 @@ private:
 
 template< typename ReturnType, typename ClassType, typename... Arguments >
 ReturnType MethodInfo::Invoke(ClassType* object, Arguments... arguments) {
+
+	MIST_ASSERT(object != nullptr);
 
 	return m_Method.Invoke<ReturnType, ClassType*, Arguments...>(object, arguments...);
 }
@@ -57,6 +65,17 @@ MethodInfo::MethodInfo(MethodInfo::MethodPointer<ClassType, ReturnType, Argument
 	: m_Method([=](ClassType* object, Arguments... arguments)->ReturnType {
 
 		return (object->*method)(arguments...);
-	}) {}
+	}) {
+}
+
+MethodInfo::MethodInfo(MethodInfo&& move) : m_MetaData(std::move(move.m_MetaData)), m_Method(std::move(move.m_Method)) {}
+
+MethodInfo& MethodInfo::operator=(MethodInfo&& move) {
+
+	m_MetaData = std::move(move.m_MetaData);
+	m_Method = std::move(move.m_Method);
+	return *this;
+
+}
 
 MIST_NAMESPACE_END

@@ -22,10 +22,11 @@ public:
 
 	// -Public API-
 
-	// Invoke the inner callback
 	template< typename ReturnType = void, typename... Arguments >
 	ReturnType Invoke(Arguments... arguments);
 
+	template< typename ReturnType = void, typename... Arguments >
+	bool HasSignature() const;
 
 	// -Structors-
 
@@ -128,6 +129,12 @@ ReturnType Delegate::Invoke(Arguments... arguments) {
 
 	Detail::CallbackInterface<ReturnType, Arguments...>* interface = Detail::Cast<ReturnType, Arguments...>(m_Callback.get());
 	return interface->Invoke(arguments...);
+}
+
+template< typename ReturnType, typename... Arguments >
+bool Delegate::HasSignature() const {
+
+	return Detail::HasDefinition<ReturnType, Arguments...>(m_Callback.get());
 }
 
 

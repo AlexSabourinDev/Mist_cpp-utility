@@ -37,6 +37,14 @@ public:
 	inline Iterator begin();
 	inline Iterator end();
 
+	MetaData() = default;
+
+	MetaData(MetaData&) = delete;
+	MetaData& operator=(MetaData&) = delete;
+
+	MetaData(MetaData&& move);
+	MetaData& operator=(MetaData&& move);
+
 private:
 
 	std::unordered_map<uint64_t, Any> m_Data;
@@ -52,7 +60,7 @@ Type* MetaData::Add(HashID id, Type data) {
 	// If this is hit, there is already an item at this location. There has either been a collision
 	// with the hashing method or you're repeating a name.
 	MIST_ASSERT(Has(id) == false);
-	auto insertionResult = m_Data.insert({ id.GetValue(), data });
+	auto insertionResult = m_Data.emplace(id.GetValue(), data);
 
 	// The insertion must have worked, if it didn't check the id and try again
 	MIST_ASSERT(insertionResult.second == true);
@@ -89,6 +97,15 @@ inline MetaData::Iterator MetaData::begin() {
 inline MetaData::Iterator MetaData::end() {
 
 	return m_Data.end();
+}
+
+MetaData::MetaData(MetaData&& move) : m_Data(std::move(move.m_Data)) {
+
+}
+MetaData& MetaData::operator=(MetaData&& move) {
+
+	m_Data = std::move(move.m_Data);
+	return *this;
 }
 
 MIST_NAMESPACE_END

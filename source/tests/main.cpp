@@ -8,6 +8,7 @@
 #include "../../include/reflection/MetaData.h"
 #include "../../include/reflection/MethodInfo.h"
 #include "../../include/reflection/MemberInfo.h"
+#include "../../include/reflection/TypeInfo.h"
 
 #include <cassert>
 #include <iostream>
@@ -102,6 +103,7 @@ void TestReflection() {
 
 	data = 0;
 	Mist::Delegate del3(&ReturnNumber);
+	MIST_ASSERT((del3.HasSignature<size_t, size_t>()) == true);
 	data = del3.Invoke<size_t, size_t>(CHANGE_TARGET);
 
 	MIST_ASSERT(data == CHANGE_TARGET);
@@ -167,6 +169,85 @@ void TestReflection() {
 	memberMera->Add<size_t>("Property", CHANGE_TARGET);
 
 	MIST_ASSERT(*memberMera->Get<size_t>("Property") == CHANGE_TARGET);
+
+
+	// -TypeInfo-
+
+	Mist::Type testType;
+	testType.DefineTypes<TestMethodInfo>();
+	Mist::TypeInfo typeInfo(std::move(testType));
+
+	Mist::MethodInfo* repeatMethodInfo = typeInfo.AddMethod("Repeat", &TestMethodInfo::Repeat);
+	Mist::MemberInfo* valueMemberInfo = typeInfo.AddMember("m_Value", &TestMethodInfo::m_Value);
+
+	MIST_ASSERT(typeInfo.HasConstructor<TestMethodInfo>() == false);
+	typeInfo.AddConstructor<TestMethodInfo>();
+	MIST_ASSERT(typeInfo.HasConstructor<TestMethodInfo>());
+
+	MIST_ASSERT(typeInfo.HasMethod("Repeat"));
+	repeatMethodInfo = typeInfo.GetMethodInfo("Repeat");
+
+	MIST_ASSERT(typeInfo.HasMethod("Lol") == false);
+
+	MIST_ASSERT(typeInfo.HasMember("m_Value"));
+	valueMemberInfo = typeInfo.GetMemberInfo("m_Value");
+
+	MIST_ASSERT(typeInfo.HasMember("Lol") == false);
+
+	TestMethodInfo* result = typeInfo.Create<TestMethodInfo>(5);
+	// These constructors aren't available
+	MIST_ASSERT(result == nullptr);
+	MIST_ASSERT(typeInfo.TryCreate<TestMethodInfo>(&result, 5) == false);
+
+	result = typeInfo.Create<TestMethodInfo>();
+	MIST_ASSERT(result != nullptr);
+
+	TestMethodInfo* otherResult;
+	MIST_ASSERT(typeInfo.TryCreate<TestMethodInfo>(&otherResult));
+	MIST_ASSERT(otherResult != nullptr);
+	delete otherResult;
+
+	MIST_ASSERT((repeatMethodInfo->Invoke<size_t, TestMethodInfo, size_t>(result, CHANGE_TARGET)) == CHANGE_TARGET);
+	MIST_ASSERT(*valueMemberInfo->Get<size_t>(result) == CHANGE_TARGET);
+	delete result;
+
+	Mist::MetaData* typeMeta = typeInfo.GetMetaData();
+	MIST_ASSERT(typeMeta->Has("Strength") == false);
+	typeMeta->Add("Strength", 1.0f);
+	MIST_ASSERT(typeMeta->Has("Strength"));
+	float* strength = typeMeta->Get<float>("Strength");
+	MIST_ASSERT(*strength == 1.0f);
+	*strength = 10.0f;
+	MIST_ASSERT(*typeMeta->Get<float>("Strength") == 10.0f);
+
+	struct NonDefault {
+		NonDefault() {
+			m_Data = CHANGE_TARGET;
+		}
+
+		NonDefault(size_t value) {
+			m_Data = value;
+		}
+
+		size_t m_Data;
+	};
+
+	Mist::Type ndType;
+	ndType.DefineTypes<NonDefault>();
+
+	Mist::TypeInfo nonDefaultType(std::move(ndType));
+	nonDefaultType.AddConstructor<NonDefault>();
+	nonDefaultType.AddConstructor<NonDefault, size_t>();
+
+	// Assure that non default constructors work
+	NonDefault* d = nonDefaultType.Create<NonDefault>(CHANGE_TARGET);
+	MIST_ASSERT(d != nullptr);
+	delete d;
+
+	d = nonDefaultType.Create<NonDefault>();
+	MIST_ASSERT(d != nullptr);
+	delete d;
+
 
 
 	std::cout << "Reflection Test Passed!" << std::endl;

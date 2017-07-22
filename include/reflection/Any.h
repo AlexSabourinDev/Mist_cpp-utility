@@ -46,6 +46,14 @@ public:
 
 	// Initialize to nothing, allowing for later setting
 	Any();
+	
+	~Any() = default;
+
+	Any(Any&) = delete;
+	Any& operator=(Any&) = delete;
+
+	Any(Any&& move);
+	Any& operator=(Any&& move);
 
 private:
 
@@ -132,6 +140,14 @@ Any::Any(ValueType value) {
 
 // Initialize to nothing, allowing for later setting
 Any::Any() : m_Data(nullptr) {}
+
+Any::Any(Any&& move) : m_Data(std::move(move.m_Data)) {}
+
+Any& Any::operator=(Any&& move) {
+
+	m_Data = std::move(move.m_Data);
+	return *this;
+}
 
 namespace Detail {
 

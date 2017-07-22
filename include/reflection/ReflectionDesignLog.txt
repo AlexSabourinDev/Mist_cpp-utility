@@ -64,15 +64,22 @@ MethodInfo
 	GetMetaData() : MetaData
 	Invoke<Type, ReturnType, Args...>(Type, Args...) : ReturnType
 
+Constructor
+	Factory : Delegate
+
 TypeInfo
 	Type : Type
 	Constructors : std::vector<Delegate>
 	Methods : std::unordered_map<uint32_t, MethodInfo>
 	MetaData : MetaData
 
+	GetType() : Type
 	GetMetaData() : MetaData
 	GetMethodInfo() : MethodInfo
 	GetMemberInfo() : MemberInfo
 
+	AddConstructor() : void
 	AddMethodInfo(uint32_t, Method) : void
 	AddMember(uint32_t, Member) : void
+
+	Create(arbitrary) : Type
