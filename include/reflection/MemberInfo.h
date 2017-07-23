@@ -32,8 +32,8 @@ public:
 	MemberInfo(MemberInfo&) = delete;
 	MemberInfo& operator=(MemberInfo&) = delete;
 
-	MemberInfo(MemberInfo&& move);
-	MemberInfo& operator=(MemberInfo&& move);
+	inline MemberInfo(MemberInfo&& move);
+	inline MemberInfo& operator=(MemberInfo&& move);
 
 private:
 

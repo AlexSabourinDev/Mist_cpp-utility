@@ -33,6 +33,9 @@ public:
 	template< typename NewType >
 	void Set(NewType type);
 
+	template< typename Type >
+	Type* Get();
+
 	// Determine if the inner value matches the ValueType
 	template< typename ValueType >
 	bool Is();
@@ -42,18 +45,18 @@ public:
 
 	// Initialize to a value
 	template< typename ValueType >
-	Any(ValueType value);
+	explicit Any(ValueType value);
 
 	// Initialize to nothing, allowing for later setting
-	Any();
+	inline Any();
 	
 	~Any() = default;
 
 	Any(Any&) = delete;
 	Any& operator=(Any&) = delete;
 
-	Any(Any&& move);
-	Any& operator=(Any&& move);
+	inline Any(Any&& move);
+	inline Any& operator=(Any&& move);
 
 private:
 
@@ -124,6 +127,12 @@ void Any::Set(NewType type) {
 	m_Data.reset(new Detail::AnyData<NewType>(type));
 }
 
+template< typename Type >
+Type* Any::Get() {
+
+	return Cast<Type>(*this);
+}
+
 // Determine if the inner value matches the ValueType
 template< typename ValueType >
 bool Any::Is() {
@@ -139,11 +148,11 @@ Any::Any(ValueType value) {
 }
 
 // Initialize to nothing, allowing for later setting
-Any::Any() : m_Data(nullptr) {}
+inline Any::Any() : m_Data(nullptr) {}
 
-Any::Any(Any&& move) : m_Data(std::move(move.m_Data)) {}
+inline Any::Any(Any&& move) : m_Data(std::move(move.m_Data)) {}
 
-Any& Any::operator=(Any&& move) {
+inline Any& Any::operator=(Any&& move) {
 
 	m_Data = std::move(move.m_Data);
 	return *this;

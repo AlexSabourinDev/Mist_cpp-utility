@@ -42,8 +42,8 @@ public:
 	MetaData(MetaData&) = delete;
 	MetaData& operator=(MetaData&) = delete;
 
-	MetaData(MetaData&& move);
-	MetaData& operator=(MetaData&& move);
+	inline MetaData(MetaData&& move);
+	inline MetaData& operator=(MetaData&& move);
 
 private:
 

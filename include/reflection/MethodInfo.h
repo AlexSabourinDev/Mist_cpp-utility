@@ -34,8 +34,8 @@ public:
 	MethodInfo(MethodInfo&) = delete;
 	MethodInfo& operator=(MethodInfo&) = delete;
 
-	MethodInfo(MethodInfo&& move);
-	MethodInfo& operator=(MethodInfo&& move);
+	inline MethodInfo(MethodInfo&& move);
+	inline MethodInfo& operator=(MethodInfo&& move);
 
 private:
 
@@ -68,9 +68,9 @@ MethodInfo::MethodInfo(MethodInfo::MethodPointer<ClassType, ReturnType, Argument
 	}) {
 }
 
-MethodInfo::MethodInfo(MethodInfo&& move) : m_MetaData(std::move(move.m_MetaData)), m_Method(std::move(move.m_Method)) {}
+inline MethodInfo::MethodInfo(MethodInfo&& move) : m_MetaData(std::move(move.m_MetaData)), m_Method(std::move(move.m_Method)) {}
 
-MethodInfo& MethodInfo::operator=(MethodInfo&& move) {
+inline MethodInfo& MethodInfo::operator=(MethodInfo&& move) {
 
 	m_MetaData = std::move(move.m_MetaData);
 	m_Method = std::move(move.m_Method);

@@ -59,7 +59,7 @@ public:
 
 	// Pass in the defined type because constructors can't have default
 	// constructed template constructors
-	explicit TypeInfo(Type type);
+	explicit inline TypeInfo(Type type);
 
 private:
 
@@ -171,7 +171,7 @@ inline MetaData* TypeInfo::GetMetaData() {
 
 // Pass in the defined type because constructors can't have default
 // constructed template constructors
-TypeInfo::TypeInfo(Type type) : m_Type(std::move(type)) {}
+inline TypeInfo::TypeInfo(Type type) : m_Type(std::move(type)) {}
 
 
 MIST_NAMESPACE_END

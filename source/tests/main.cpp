@@ -9,6 +9,7 @@
 #include "../../include/reflection/MethodInfo.h"
 #include "../../include/reflection/MemberInfo.h"
 #include "../../include/reflection/TypeInfo.h"
+#include "../../include/reflection/Reflection.h"
 
 #include <cassert>
 #include <iostream>
@@ -18,6 +19,8 @@
 #include <limits>
 #include <ctime>
 #include <memory>
+
+size_t g_SomeGlobal = 10;
 
 // Simple timer methods
 std::clock_t s_StartTime;
@@ -248,7 +251,30 @@ void TestReflection() {
 	MIST_ASSERT(d != nullptr);
 	delete d;
 
+	Mist::Reflection reflection;
+	Mist::TypeInfo* reflectedType = reflection.AddType<NonDefault>("NonDefault");
+	MIST_ASSERT(reflectedType != nullptr);
+	Mist::TypeInfo* otherReflected = reflection.GetType("NonDefault");
 
+	MIST_ASSERT(reflectedType == otherReflected);
+
+	Mist::Delegate* global = reflection.AddGlobalFunction("ReturnNumber", &ReturnNumber);
+	Mist::Delegate* otherGlobal = reflection.GetGlobalFunction("ReturnNumber");
+	MIST_ASSERT(global == otherGlobal);
+
+	MIST_ASSERT((global->Invoke<size_t, size_t>(CHANGE_TARGET)) == CHANGE_TARGET);
+
+	Mist::Any* gAny = reflection.AddGlobalObject("Any", &g_SomeGlobal);
+	Mist::Any* otherAny = reflection.GetGlobalObject("Any");
+
+	MIST_ASSERT(gAny == otherAny);
+	MIST_ASSERT((**gAny->Get<size_t*>()) == 10);
+
+	Mist::Reflection mergedTarget;
+	Mist::Merge(std::move(reflection), &mergedTarget);
+
+	global = mergedTarget.GetGlobalFunction("ReturnNumber");
+	MIST_ASSERT((global->Invoke<size_t, size_t>(CHANGE_TARGET)) == CHANGE_TARGET);
 
 	std::cout << "Reflection Test Passed!" << std::endl;
 

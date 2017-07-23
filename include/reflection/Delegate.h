@@ -37,8 +37,8 @@ public:
 	Delegate(Delegate&) = delete;
 	Delegate& operator=(Delegate&) = delete;
 
-	Delegate(Delegate&& move);
-	Delegate& operator=(Delegate&& move);
+	inline Delegate(Delegate&& move);
+	inline Delegate& operator=(Delegate&& move);
 
 private:
 
