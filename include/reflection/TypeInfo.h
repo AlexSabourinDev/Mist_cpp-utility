@@ -56,8 +56,8 @@ public:
 	inline MetaData* GetMetaData();
 
 
-	inline const std::unordered_map<uint64_t, MethodInfo>& GetMethods();
-	inline const std::unordered_map<uint64_t, MemberInfo>& GetMembers();
+	inline std::unordered_map<uint64_t, MethodInfo>* GetMethods();
+	inline std::unordered_map<uint64_t, MemberInfo>* GetMembers();
 
 	// -Structors-
 
@@ -173,14 +173,14 @@ inline MetaData* TypeInfo::GetMetaData() {
 	return &m_MetaData;
 }
 
-inline const std::unordered_map<uint64_t, MethodInfo>& TypeInfo::GetMethods() {
+inline std::unordered_map<uint64_t, MethodInfo>* TypeInfo::GetMethods() {
 
-	return m_Methods;
+	return &m_Methods;
 }
 
-inline const std::unordered_map<uint64_t, MemberInfo>& TypeInfo::GetMembers() {
+inline std::unordered_map<uint64_t, MemberInfo>* TypeInfo::GetMembers() {
 
-	return m_Members;
+	return &m_Members;
 }
 
 // Pass in the defined type because constructors can't have default

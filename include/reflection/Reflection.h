@@ -34,9 +34,9 @@ public:
 
 	inline Any* GetGlobalObject(HashID name);
 
-	inline const std::unordered_map<uint64_t, TypeInfo>& GetTypes();
-	inline const std::unordered_map<uint64_t, Delegate>& GetGlobalFunctions();
-	inline const std::unordered_map<uint64_t, Any>& GetGlobalObjects();
+	inline std::unordered_map<uint64_t, TypeInfo>* GetTypes();
+	inline std::unordered_map<uint64_t, Delegate>* GetGlobalFunctions();
+	inline std::unordered_map<uint64_t, Any>* GetGlobalObjects();
 
 	// -Global API-
 	friend void Merge(Reflection&& left, Reflection* output);
@@ -102,19 +102,19 @@ inline Any* Reflection::GetGlobalObject(HashID name) {
 	return &m_GlobalObjects.at(name.GetValue());
 }
 
-inline const std::unordered_map<uint64_t, TypeInfo>& Reflection::GetTypes() {
+inline std::unordered_map<uint64_t, TypeInfo>* Reflection::GetTypes() {
 
-	return m_Types;
+	return &m_Types;
 }
 
-inline const std::unordered_map<uint64_t, Delegate>& Reflection::GetGlobalFunctions() {
+inline std::unordered_map<uint64_t, Delegate>* Reflection::GetGlobalFunctions() {
 
-	return m_GlobalFunctions;
+	return &m_GlobalFunctions;
 }
 
-inline const std::unordered_map<uint64_t, Any>& Reflection::GetGlobalObjects() {
+inline std::unordered_map<uint64_t, Any>* Reflection::GetGlobalObjects() {
 
-	return m_GlobalObjects;
+	return &m_GlobalObjects;
 }
 
 MIST_NAMESPACE_END
