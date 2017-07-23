@@ -22,7 +22,7 @@ public:
 	inline constexpr HashID(const char* name);
 
 	// Creates a hash id with a directly initialized value
-	explicit HashID(uint64_t hashValue);
+	inline explicit HashID(uint64_t hashValue);
 
 private:
 	uint64_t m_HashValue = 0;
@@ -38,6 +38,8 @@ inline uint64_t HashID::GetValue() const {
 }
 
 inline constexpr HashID::HashID(const char* name) : m_HashValue(Hash64(name)) {}
+
+inline HashID::HashID(uint64_t hashValue) : m_HashValue(hashValue) {}
 
 
 MIST_NAMESPACE_END
