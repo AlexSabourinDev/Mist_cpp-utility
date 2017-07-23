@@ -16,6 +16,7 @@ public:
 
 	inline uint64_t GetValue() const;
 	
+	inline bool operator==(const char* name);
 
 	// -Structors-
 
@@ -35,6 +36,11 @@ private:
 inline uint64_t HashID::GetValue() const {
 	
 	return m_HashValue;
+}
+
+inline bool HashID::operator==(const char* name) {
+
+	return m_HashValue == Hash64(name);
 }
 
 inline constexpr HashID::HashID(const char* name) : m_HashValue(Hash64(name)) {}
