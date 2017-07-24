@@ -3,7 +3,8 @@
 #include "../common/UtilityMacros.h"
 #include "TypeInfo.h"
 #include "Any.h"
-#include "Delegate.h"
+#include "GlobalFunction.h"
+#include "GlobalObject.h"
 #include "../utility/HashID.h"
 #include <unordered_map>
 
@@ -24,27 +25,27 @@ public:
 
 
 	template< typename ReturnType, typename... Arguments >
-	Delegate* AddGlobalFunction(HashID name, ReturnType (*function)(Arguments...));
+	GlobalFunction* AddGlobalFunction(HashID name, ReturnType (*function)(Arguments...));
 
-	inline Delegate* GetGlobalFunction(HashID name);
+	inline GlobalFunction* GetGlobalFunction(HashID name);
 
 
 	template< typename ObjectType >
-	Any* AddGlobalObject(HashID name, ObjectType* object);
+	GlobalObject* AddGlobalObject(HashID name, ObjectType* object);
 
-	inline Any* GetGlobalObject(HashID name);
+	inline GlobalObject* GetGlobalObject(HashID name);
 
 	inline std::unordered_map<uint64_t, TypeInfo>* GetTypes();
-	inline std::unordered_map<uint64_t, Delegate>* GetGlobalFunctions();
-	inline std::unordered_map<uint64_t, Any>* GetGlobalObjects();
+	inline std::unordered_map<uint64_t, GlobalFunction>* GetGlobalFunctions();
+	inline std::unordered_map<uint64_t, GlobalObject>* GetGlobalObjects();
 
 	// -Global API-
 	friend void Merge(Reflection&& left, Reflection* output);
 
 private:
 	std::unordered_map<uint64_t, TypeInfo> m_Types;
-	std::unordered_map<uint64_t, Delegate> m_GlobalFunctions;
-	std::unordered_map<uint64_t, Any> m_GlobalObjects;
+	std::unordered_map<uint64_t, GlobalFunction> m_GlobalFunctions;
+	std::unordered_map<uint64_t, GlobalObject> m_GlobalObjects;
 };
 
 
@@ -72,7 +73,7 @@ inline TypeInfo* Reflection::GetType(HashID name) {
 
 
 template< typename ReturnType, typename... Arguments >
-Delegate* Reflection::AddGlobalFunction(HashID name, ReturnType(*function)(Arguments...)) {
+GlobalFunction* Reflection::AddGlobalFunction(HashID name, ReturnType(*function)(Arguments...)) {
 
 	auto result = m_GlobalFunctions.emplace(name.GetValue(), function);
 
@@ -81,14 +82,14 @@ Delegate* Reflection::AddGlobalFunction(HashID name, ReturnType(*function)(Argum
 	return &result.first->second;
 }
 
-inline Delegate* Reflection::GetGlobalFunction(HashID name) {
+inline GlobalFunction* Reflection::GetGlobalFunction(HashID name) {
 
 	return &m_GlobalFunctions.at(name.GetValue());
 }
 
 
 template< typename ObjectType >
-Any* Reflection::AddGlobalObject(HashID name, ObjectType* object) {
+GlobalObject* Reflection::AddGlobalObject(HashID name, ObjectType* object) {
 
 	auto result = m_GlobalObjects.emplace(name.GetValue(), object);
 
@@ -97,7 +98,7 @@ Any* Reflection::AddGlobalObject(HashID name, ObjectType* object) {
 	return &result.first->second;
 }
 
-inline Any* Reflection::GetGlobalObject(HashID name) {
+inline GlobalObject* Reflection::GetGlobalObject(HashID name) {
 
 	return &m_GlobalObjects.at(name.GetValue());
 }
@@ -107,12 +108,12 @@ inline std::unordered_map<uint64_t, TypeInfo>* Reflection::GetTypes() {
 	return &m_Types;
 }
 
-inline std::unordered_map<uint64_t, Delegate>* Reflection::GetGlobalFunctions() {
+inline std::unordered_map<uint64_t, GlobalFunction>* Reflection::GetGlobalFunctions() {
 
 	return &m_GlobalFunctions;
 }
 
-inline std::unordered_map<uint64_t, Any>* Reflection::GetGlobalObjects() {
+inline std::unordered_map<uint64_t, GlobalObject>* Reflection::GetGlobalObjects() {
 
 	return &m_GlobalObjects;
 }

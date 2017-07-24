@@ -258,17 +258,23 @@ void TestReflection() {
 
 	MIST_ASSERT(reflectedType == otherReflected);
 
-	Mist::Delegate* global = reflection.AddGlobalFunction("ReturnNumber", &ReturnNumber);
-	Mist::Delegate* otherGlobal = reflection.GetGlobalFunction("ReturnNumber");
+	Mist::GlobalFunction* global = reflection.AddGlobalFunction("ReturnNumber", &ReturnNumber);
+	global->GetMetaData()->Add("Meta", (size_t)10);
+	MIST_ASSERT(*global->GetMetaData()->Get<size_t>("Meta") == 10);
+
+	Mist::GlobalFunction* otherGlobal = reflection.GetGlobalFunction("ReturnNumber");
 	MIST_ASSERT(global == otherGlobal);
 
 	MIST_ASSERT((global->Invoke<size_t, size_t>(CHANGE_TARGET)) == CHANGE_TARGET);
 
-	Mist::Any* gAny = reflection.AddGlobalObject("Any", &g_SomeGlobal);
-	Mist::Any* otherAny = reflection.GetGlobalObject("Any");
+	Mist::GlobalObject* gAny = reflection.AddGlobalObject("Any", &g_SomeGlobal);
+	gAny->GetMetaData()->Add("Meta", (size_t)10);
+	MIST_ASSERT(*gAny->GetMetaData()->Get<size_t>("Meta") == 10);
+
+	Mist::GlobalObject* otherAny = reflection.GetGlobalObject("Any");
 
 	MIST_ASSERT(gAny == otherAny);
-	MIST_ASSERT((**gAny->Get<size_t*>()) == 10);
+	MIST_ASSERT((*gAny->Get<size_t>()) == 10);
 
 	Mist::Reflection mergedTarget;
 	Mist::Merge(std::move(reflection), &mergedTarget);
@@ -277,7 +283,6 @@ void TestReflection() {
 	MIST_ASSERT((global->Invoke<size_t, size_t>(CHANGE_TARGET)) == CHANGE_TARGET);
 
 	std::cout << "Reflection Test Passed!" << std::endl;
-
 }
 
 void TestHash() {

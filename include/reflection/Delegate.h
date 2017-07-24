@@ -188,6 +188,7 @@ namespace Detail {
 	template< typename ReturnType, typename... Arguments >
 	Callback* MakeCallback(ReturnType(*callback)(Arguments...)) {
 		
+		MIST_ASSERT(callback != nullptr);
 		return new CallbackDefinition<ReturnType(*)(Arguments...), ReturnType, Arguments...>(callback);
 	}
 
@@ -195,6 +196,7 @@ namespace Detail {
 	template< typename ReturnType, typename... Arguments >
 	bool HasDefinition(Callback* callback) {
 
+		MIST_ASSERT(callback != nullptr);
 		return dynamic_cast<CallbackInterface<ReturnType, Arguments...>*>(callback) != nullptr;
 	}
 
@@ -202,6 +204,7 @@ namespace Detail {
 	template< typename ReturnType, typename... Arguments >
 	CallbackInterface<ReturnType, Arguments...>* Cast(Callback* callback) {
 
+		MIST_ASSERT(callback != nullptr);
 		return dynamic_cast<CallbackInterface<ReturnType, Arguments...>*>(callback);
 	}
 
