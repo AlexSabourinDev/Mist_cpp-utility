@@ -1,12 +1,12 @@
 # cpp-utility
 The Cpp Utility is a personal project with the goals of personal education and useful utilities for the planned Mist Game Engine.
 
-##Sub-Projects
+## Sub-Projects
 
-##Reflection 
+## Reflection 
 The Reflection sub-project is a collection of reflection utilities for C++. The goals of the library were to be able to have a simple utility to provide reflection capabilities for C++ based on the rttr library and C# reflection tools. The library is simple, with few, easy to understand and modify files.
 
-###Example
+### Example
 
 To begin, a reflection object must be created in the project. For this example, we'll be making a global.
 
@@ -74,3 +74,9 @@ Additionaly, you can add MetaData to reflection data by retrieving the MetaData 
 ```c++
 methodInfo->GetMetaData()->Add("ExampleAttribute", ExampleAttribute());
 ```
+
+### Dependancies
+The reflection sub-project depends on the files in common and utility.
+
+# Contact
+For questions, comments or general conversation reach me at AlexSabourinDev@gmail.com
