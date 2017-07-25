@@ -48,6 +48,8 @@ private:
 	std::unordered_map<uint64_t, GlobalObject> m_GlobalObjects;
 };
 
+void Merge(Reflection&& left, Reflection* output);
+
 
 // -Implementation-
 
@@ -91,7 +93,7 @@ inline GlobalFunction* Reflection::GetGlobalFunction(HashID name) {
 template< typename ObjectType >
 GlobalObject* Reflection::AddGlobalObject(HashID name, ObjectType* object) {
 
-	auto result = m_GlobalObjects.emplace(name.GetValue(), object);
+	auto result = m_GlobalObjects.emplace(name.GetValue(), GlobalObject(object));
 
 	MIST_ASSERT(result.second);
 

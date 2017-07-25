@@ -52,8 +52,8 @@ public:
 	
 	~Any() = default;
 
-	Any(Any&) = delete;
-	Any& operator=(Any&) = delete;
+	Any(const Any&) = delete;
+	Any& operator=(const Any&) = delete;
 
 	inline Any(Any&& move);
 	inline Any& operator=(Any&& move);
@@ -161,7 +161,7 @@ inline Any& Any::operator=(Any&& move) {
 namespace Detail {
 
 	template< typename DataType >
-	typename DataType* AnyData<DataType>::Get() {
+	DataType* AnyData<DataType>::Get() {
 
 		return &m_Data;
 	}

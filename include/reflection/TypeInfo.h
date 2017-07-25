@@ -124,7 +124,7 @@ MemberInfo* TypeInfo::AddMember(HashID key, MemberInfo::MemberPointer<ClassType,
 	MIST_ASSERT(m_Type.Is<ClassType>());
 
 	MIST_ASSERT(HasMember(key) == false);
-	auto result = m_Members.emplace(key.GetValue(), member);
+	auto result = m_Members.emplace(key.GetValue(), MemberInfo(member));
 
 	// Assure that the insertion took place
 	MIST_ASSERT(result.second);
@@ -149,7 +149,7 @@ MethodInfo* TypeInfo::AddMethod(HashID key, MethodInfo::MethodPointer<ClassType,
 	MIST_ASSERT(m_Type.Is<ClassType>());
 
 	MIST_ASSERT(HasMethod(key) == false);
-	auto result = m_Methods.emplace(key.GetValue(), method);
+	auto result = m_Methods.emplace(key.GetValue(), MethodInfo(method));
 
 	// Assure that the insertion took place
 	MIST_ASSERT(result.second);

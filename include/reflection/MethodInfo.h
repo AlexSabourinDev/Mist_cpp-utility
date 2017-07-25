@@ -31,8 +31,8 @@ public:
 	template< typename ClassType, typename ReturnType, typename... Arguments >
 	explicit MethodInfo(MethodPointer<ClassType, ReturnType, Arguments...> method);
 
-	MethodInfo(MethodInfo&) = delete;
-	MethodInfo& operator=(MethodInfo&) = delete;
+	MethodInfo(const MethodInfo&) = delete;
+	MethodInfo& operator=(const MethodInfo&) = delete;
 
 	inline MethodInfo(MethodInfo&& move);
 	inline MethodInfo& operator=(MethodInfo&& move);

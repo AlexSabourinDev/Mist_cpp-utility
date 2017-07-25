@@ -39,8 +39,8 @@ public:
 
 	MetaData() = default;
 
-	MetaData(MetaData&) = delete;
-	MetaData& operator=(MetaData&) = delete;
+	MetaData(const MetaData&) = delete;
+	MetaData& operator=(const MetaData&) = delete;
 
 	inline MetaData(MetaData&& move);
 	inline MetaData& operator=(MetaData&& move);
@@ -60,7 +60,7 @@ Type* MetaData::Add(HashID id, Type data) {
 	// If this is hit, there is already an item at this location. There has either been a collision
 	// with the hashing method or you're repeating a name.
 	MIST_ASSERT(Has(id) == false);
-	auto insertionResult = m_Data.emplace(id.GetValue(), data);
+	auto insertionResult = m_Data.emplace(id.GetValue(), Any(data));
 
 	// The insertion must have worked, if it didn't check the id and try again
 	MIST_ASSERT(insertionResult.second == true);

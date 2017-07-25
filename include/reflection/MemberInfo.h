@@ -29,8 +29,8 @@ public:
 	template< typename ClassType, typename MemberType >
 	explicit MemberInfo(MemberPointer<ClassType, MemberType> memberPointer);
 
-	MemberInfo(MemberInfo&) = delete;
-	MemberInfo& operator=(MemberInfo&) = delete;
+	MemberInfo(const MemberInfo&) = delete;
+	MemberInfo& operator=(const MemberInfo&) = delete;
 
 	inline MemberInfo(MemberInfo&& move);
 	inline MemberInfo& operator=(MemberInfo&& move);

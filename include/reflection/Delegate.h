@@ -34,8 +34,8 @@ public:
 	Delegate(CallbackType callback);
 	~Delegate() = default;
 
-	Delegate(Delegate&) = delete;
-	Delegate& operator=(Delegate&) = delete;
+	Delegate(const Delegate&) = delete;
+	Delegate& operator=(const Delegate&) = delete;
 
 	inline Delegate(Delegate&& move);
 	inline Delegate& operator=(Delegate&& move);

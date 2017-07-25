@@ -34,8 +34,8 @@ public:
 	Type() = default;
 	~Type() = default;
 
-	Type(Type&) = delete;
-	Type& operator=(Type&) = delete;
+	Type(const Type&) = delete;
+	Type& operator=(const Type&) = delete;
 
 	inline Type(Type&& move);
 	inline Type& operator=(Type&& move);
