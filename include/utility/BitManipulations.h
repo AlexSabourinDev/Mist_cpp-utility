@@ -95,6 +95,8 @@ inline bool IsFlagSet(const BitField mask, const BitField flag) {
 }
 
 // Determine how many flags are set in the mask
+// Concept from: https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKernighan.
+// Discovered and shared by: https://github.com/xoorath
 inline size_t CountBitsSet(BitField bits) {
 	BitField count = 0;
 	// While we still have bits left
