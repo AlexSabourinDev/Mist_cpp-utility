@@ -35,14 +35,14 @@ public:
 
 	inline GlobalObject* GetGlobalObject(HashID name);
 
-	inline std::unordered_map<uint64_t, TypeInfo>* GetTypes();
-	inline std::unordered_map<uint64_t, GlobalFunction>* GetGlobalFunctions();
-	inline std::unordered_map<uint64_t, GlobalObject>* GetGlobalObjects();
+	inline std::unordered_map<uint32_t, TypeInfo>* GetTypes();
+	inline std::unordered_map<uint32_t, GlobalFunction>* GetGlobalFunctions();
+	inline std::unordered_map<uint32_t, GlobalObject>* GetGlobalObjects();
 
 private:
-	std::unordered_map<uint64_t, TypeInfo> m_Types;
-	std::unordered_map<uint64_t, GlobalFunction> m_GlobalFunctions;
-	std::unordered_map<uint64_t, GlobalObject> m_GlobalObjects;
+	std::unordered_map<uint32_t, TypeInfo> m_Types;
+	std::unordered_map<uint32_t, GlobalFunction> m_GlobalFunctions;
+	std::unordered_map<uint32_t, GlobalObject> m_GlobalObjects;
 };
 
 void Merge(Reflection&& left, Reflection* output);
@@ -102,17 +102,17 @@ inline GlobalObject* Reflection::GetGlobalObject(HashID name) {
 	return &m_GlobalObjects.at(name.GetValue());
 }
 
-inline std::unordered_map<uint64_t, TypeInfo>* Reflection::GetTypes() {
+inline std::unordered_map<uint32_t, TypeInfo>* Reflection::GetTypes() {
 
 	return &m_Types;
 }
 
-inline std::unordered_map<uint64_t, GlobalFunction>* Reflection::GetGlobalFunctions() {
+inline std::unordered_map<uint32_t, GlobalFunction>* Reflection::GetGlobalFunctions() {
 
 	return &m_GlobalFunctions;
 }
 
-inline std::unordered_map<uint64_t, GlobalObject>* Reflection::GetGlobalObjects() {
+inline std::unordered_map<uint32_t, GlobalObject>* Reflection::GetGlobalObjects() {
 
 	return &m_GlobalObjects;
 }

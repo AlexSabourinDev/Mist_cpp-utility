@@ -56,8 +56,8 @@ public:
 	inline MetaData* GetMetaData();
 
 
-	inline std::unordered_map<uint64_t, MethodInfo>* GetMethods();
-	inline std::unordered_map<uint64_t, MemberInfo>* GetMembers();
+	inline std::unordered_map<uint32_t, MethodInfo>* GetMethods();
+	inline std::unordered_map<uint32_t, MemberInfo>* GetMembers();
 
 	// -Structors-
 
@@ -70,8 +70,8 @@ private:
 	Type m_Type;
 
 	std::vector<Delegate> m_Constructors;
-	std::unordered_map<uint64_t, MethodInfo> m_Methods;
-	std::unordered_map<uint64_t, MemberInfo> m_Members;
+	std::unordered_map<uint32_t, MethodInfo> m_Methods;
+	std::unordered_map<uint32_t, MemberInfo> m_Members;
 	
 	MetaData m_MetaData;
 };
@@ -173,12 +173,12 @@ inline MetaData* TypeInfo::GetMetaData() {
 	return &m_MetaData;
 }
 
-inline std::unordered_map<uint64_t, MethodInfo>* TypeInfo::GetMethods() {
+inline std::unordered_map<uint32_t, MethodInfo>* TypeInfo::GetMethods() {
 
 	return &m_Methods;
 }
 
-inline std::unordered_map<uint64_t, MemberInfo>* TypeInfo::GetMembers() {
+inline std::unordered_map<uint32_t, MemberInfo>* TypeInfo::GetMembers() {
 
 	return &m_Members;
 }

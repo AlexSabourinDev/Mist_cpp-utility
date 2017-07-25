@@ -14,7 +14,7 @@ public:
 
 	// -Public API-
 
-	inline uint64_t GetValue() const;
+	inline uint32_t GetValue() const;
 	
 	inline bool operator==(const char* name);
 
@@ -23,29 +23,29 @@ public:
 	inline constexpr HashID(const char* name);
 
 	// Creates a hash id with a directly initialized value
-	inline explicit HashID(uint64_t hashValue);
+	inline explicit HashID(uint32_t hashValue);
 
 private:
-	uint64_t m_HashValue = 0;
+	uint32_t m_HashValue = 0;
 
 };
 
 
 // -Implementation-
 
-inline uint64_t HashID::GetValue() const {
+inline uint32_t HashID::GetValue() const {
 	
 	return m_HashValue;
 }
 
 inline bool HashID::operator==(const char* name) {
 
-	return m_HashValue == Hash64(name);
+	return m_HashValue == Hash_djb2(name);
 }
 
-inline constexpr HashID::HashID(const char* name) : m_HashValue(Hash64(name)) {}
+inline constexpr HashID::HashID(const char* name) : m_HashValue(Hash_djb2(name)) {}
 
-inline HashID::HashID(uint64_t hashValue) : m_HashValue(hashValue) {}
+inline HashID::HashID(uint32_t hashValue) : m_HashValue(hashValue) {}
 
 
 MIST_NAMESPACE_END

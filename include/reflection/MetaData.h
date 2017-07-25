@@ -29,7 +29,7 @@ public:
 	inline bool Has(HashID id) const;
 
 	// -Types-
-	using Iterator = std::unordered_map<uint64_t, Any>::iterator;
+	using Iterator = std::unordered_map<uint32_t, Any>::iterator;
 
 	// -Iterators-
 
@@ -47,7 +47,7 @@ public:
 
 private:
 
-	std::unordered_map<uint64_t, Any> m_Data;
+	std::unordered_map<uint32_t, Any> m_Data;
 
 };
 
