@@ -39,9 +39,6 @@ public:
 	inline std::unordered_map<uint64_t, GlobalFunction>* GetGlobalFunctions();
 	inline std::unordered_map<uint64_t, GlobalObject>* GetGlobalObjects();
 
-	// -Global API-
-	friend void Merge(Reflection&& left, Reflection* output);
-
 private:
 	std::unordered_map<uint64_t, TypeInfo> m_Types;
 	std::unordered_map<uint64_t, GlobalFunction> m_GlobalFunctions;
