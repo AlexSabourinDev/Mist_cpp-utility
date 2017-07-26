@@ -98,7 +98,7 @@ inline bool IsFlagSet(const BitField mask, const BitField flag) {
 // Concept from: https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKernighan.
 // Discovered and shared by: https://github.com/xoorath
 inline size_t CountBitsSet(BitField bits) {
-	BitField count = 0;
+	size_t count = 0;
 	// While we still have bits left
 	while (bits != 0) {
 		// Remove the least significant bit
