@@ -347,5 +347,47 @@ void InsertionSort(SourceCollectionType&& source, DestinationCollectionType* des
 	}
 }
 
+// -BucketSort-
+
+// Bucket sort is simply a counting algorithm that counts the amount of a recuring value
+// and then reconstructs the list based on the count of those values. The sorting runs in O(2n) or O(n)
+template< typename IteratorType, typename ValueType, typename CountType = size_t >
+void BucketSort(IteratorType begin, IteratorType end, const ValueType min, const ValueType max) {
+
+	MIST_ASSERT(max > min);
+
+	// Create the vector for the counting of the values
+	std::vector<CountType> counts(max - min);
+	counts.resize(max - min);
+
+	for (IteratorType current = begin; current != end; ++current) {
+		
+		MIST_ASSERT(*current >= min);
+		MIST_ASSERT(*current <= max);
+
+		// Increment the count
+		++counts[*current - min];
+	}
+
+	// Rebuild the list
+	size_t currentIndex = 0;
+	for (IteratorType current = begin; current != end; ++current) {
+
+		while (counts[currentIndex] == 0) {
+			++currentIndex;
+		}
+
+		(*current) = currentIndex;
+		--counts[currentIndex];
+	}
+}
+
+// This version of bucket sort simply pipes the arguments to the iterator version of bucket sort.
+// This version exists to match up with the merge sort interface.
+template< typename CollectionType, typename ValueType, typename CountType = size_t >
+void BucketSort(CollectionType* collection, const ValueType min, const ValueType max) {
+	BucketSort<decltype(collection->begin()), ValueType, CountType>(collection->begin(), collection->end(), min, max);
+}
+
 
 MIST_NAMESPACE_END

@@ -517,6 +517,37 @@ void TestSorting() {
 
 	std::cout << totalSortTime << "ms" << std::endl;
 
+	std::cout << "Bucket Sort" << std::endl;
+
+
+
+	for (size_t i = 0; i < ELEMENT_COUNT; i++) {
+		arr[i] = rand() % ELEMENT_COUNT + 10;
+	}
+
+	// quick sort the vector
+	Mist::BucketSort(std::begin(arr), std::end(arr), (size_t)10, ELEMENT_COUNT + 10);
+	MIST_ASSERT(Mist::IsSorted(std::begin(arr), std::end(arr)));
+
+	totalSortTime = 0.0;
+	// Run the simulation multiple times
+	for (size_t j = 0; j < SORTING_ITERATIONS; j++) {
+		// clear the vector and restart
+		m.clear();
+		for (size_t i = 0; i < ELEMENT_COUNT; i++) {
+			m.push_back(rand() % ELEMENT_COUNT);
+		}
+
+		BeginTimer();
+		// quick sort the vector
+		Mist::BucketSort(&m, (size_t)0, ELEMENT_COUNT);
+		totalSortTime += EndTimer();
+
+		MIST_ASSERT(Mist::IsSorted(std::begin(m), std::end(m)));
+	}
+
+	std::cout << totalSortTime << "ms" << std::endl;
+
 	std::cout << "Sorting Tests Passed!" << std::endl;
 }
 
