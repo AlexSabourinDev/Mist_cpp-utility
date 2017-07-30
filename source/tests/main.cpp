@@ -10,6 +10,7 @@
 #include "../../include/reflection/MemberInfo.h"
 #include "../../include/reflection/TypeInfo.h"
 #include "../../include/reflection/Reflection.h"
+#include "../../include/data-structures/SingleList.h"
 
 #include <cassert>
 #include <iostream>
@@ -604,7 +605,96 @@ void TestBitManipulations() {
 	MIST_ASSERT(Mist::GetMaskDifferences(3, 1) == 2);
 	MIST_ASSERT(Mist::GetMaskDifferences(5, 3) == 2 + 4);
 	MIST_ASSERT(Mist::GetMaskDifferences(8, 2) == 2 + 8);
+}
 
+void TestSingleList() {
+
+	std::cout << "SingleList Tests" << std::endl;
+
+	Mist::SingleList<size_t> list;
+	
+	MIST_ASSERT(list.Size() == 0);
+	Mist::SingleList<size_t>::Node* outNode = nullptr;
+	MIST_ASSERT(list.TryFind([](const size_t& value) { return value == 10; }, &outNode) == false);
+	MIST_ASSERT(list.Find([](const size_t& value) { return value == 10; }) == nullptr);
+
+	list.PushFront(0);
+	MIST_ASSERT(list.Size() == 1);
+	MIST_ASSERT(list.GetNode(0) == list.FrontNode());
+	MIST_ASSERT(list.GetNode(0) == list.BackNode());
+	MIST_ASSERT(list.FrontNode() == list.BackNode());
+
+	MIST_ASSERT(*list.Get(0) == *list.Front());
+	MIST_ASSERT(*list.Get(0) == *list.Back());
+	MIST_ASSERT(*list.Front() == *list.Back());
+
+	list.Remove(list.FrontNode());
+	MIST_ASSERT(list.Size() == 0);
+
+	list.PushBack(2);
+	MIST_ASSERT(*list.Get(0) == 2);
+	MIST_ASSERT(*list.Front() == 2);
+	MIST_ASSERT(*list.Back() == 2);
+
+	list.PushBack(10);
+	MIST_ASSERT(*list.Front() != *list.Back());
+	MIST_ASSERT(list.FrontNode() != list.BackNode());
+	MIST_ASSERT(*list.Back() == 10);
+	MIST_ASSERT(*list.Front() == 2);
+	MIST_ASSERT(list.Size() == 2);
+
+	list.InsertAfter(list.FrontNode(), 5);
+	MIST_ASSERT(list.Size() == 3);
+	MIST_ASSERT(*list.Get(1) != *list.Front());
+	MIST_ASSERT(*list.Get(1) != *list.Back());
+	MIST_ASSERT(*list.GetNode(1)->Get() == *list.Get(1));
+	MIST_ASSERT(list.Find([](const size_t& value) { return value == 5; }) == list.GetNode(1));
+
+	list.InsertAfter(list.BackNode(), 15);
+	MIST_ASSERT(*list.Back() == 15);
+	MIST_ASSERT(list.Size() == 4);
+	
+	list.PushFront(0);
+	MIST_ASSERT(*list.Front() == 0);
+	MIST_ASSERT(list.Size() == 5);
+
+
+	size_t previousValue = *list.Front();
+	Mist::SingleList<size_t>::Node* node = list.FrontNode();
+	for (size_t i = 1; i < list.Size(); i++) {
+
+		node = node->Next();
+		MIST_ASSERT(*list.Get(i) > previousValue);
+
+		// Assure that the nodes match
+		MIST_ASSERT(list.GetNode(i) == node);
+	}
+
+	MIST_ASSERT(list.TryFind([](const size_t& value) { return value == 0; }, &outNode));
+
+	list.InsertAfter(list.BackNode(), 20);
+	MIST_ASSERT(*list.Back() == 20);
+
+	MIST_ASSERT(list.Size() == 6);
+	list.Remove(list.BackNode());
+	MIST_ASSERT(list.Size() == 5);
+
+	list.Clear();
+	MIST_ASSERT(list.Size() == 0);
+
+	list.PushFront(0);
+	list.Remove(list.FrontNode());
+	MIST_ASSERT(list.Size() == 0);
+	for (size_t i = 0; i < 10; i++) {
+
+		list.PushBack(i);
+	}
+	MIST_ASSERT(list.Size() == 10);
+	list.Remove(list.FrontNode());
+	MIST_ASSERT(*list.Front() == 1);
+	MIST_ASSERT(*list.Back() == 9);
+
+	std::cout << "Single List Tests Passed" << std::endl;
 }
 
 int main() {
@@ -614,6 +704,7 @@ int main() {
 	TestBitManipulations();
 	TestReflection();
 	TestHash();
+	TestSingleList();
 
 	Pause();
 	return 0;
