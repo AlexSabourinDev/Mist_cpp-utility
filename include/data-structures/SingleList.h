@@ -12,6 +12,7 @@ class SingleList {
 public:
 
 	class Node;
+	class Iterator;
 
 	// -Public API-
 
@@ -25,47 +26,47 @@ public:
 	template< typename WriteType,
 		// @Template Condition: the write type must be convertible to value type
 		typename Condition = typename std::enable_if<std::is_convertible<WriteType, ValueType>::value>::type >
-	void PushFront(WriteType&& writeValue);
+	void InsertAsFirst(WriteType&& writeValue);
 
-	// Write a value into the single list at the front
+	// Write a value into the single list at the back
 	template< typename WriteType,
 		// @Template Condition: the write type must be convertible to value type
 		typename Condition = typename std::enable_if<std::is_convertible<WriteType, ValueType>::value>::type >
-	void PushBack(WriteType&& writeValue);
+	void InsertAsLast(WriteType&& writeValue);
 
-	// Remove this node
 	void Remove(Node* node);
 
 
-	// Find the node that passes the find method
-	template< typename CheckMethod >
-	Node* Find(CheckMethod findMethod);
+	// Find the node that meets the requirements of the predicate delegate
+	template< typename Predicate >
+	Node* FindNode(Predicate predicate);
 
 	// Find the node that passes the findMethod
-	template< typename CheckMethod >
-	bool TryFind(CheckMethod findMethod, Node** outNode);
+	template< typename Predicate >
+	bool TryFindNode(Predicate predicate, Node** outNode);
 
 	// Retrieve the value stored at index, this operation runs at O(n) time
-	ValueType* Get(size_t index);
+	ValueType* RetrieveValueAt(size_t index);
 
 	// Retrieve the node at index, this operation runs at O(n) time
-	Node* GetNode(size_t index);
+	Node* RetrieveNodeAt(size_t index);
 
-	// Get the head of the list
-	ValueType* Front();
+	ValueType* FirstValue();
 
-	// Get thee back of the list
-	ValueType* Back();
+	ValueType* LastValue();
 
-	// Get the front node of the list, this is the head
-	Node* FrontNode();
+	Node* FirstNode();
 
-	// Get the back node of the list
-	Node* BackNode();
+	Node* LastNode();
 
 	size_t Size() const;
 
 	void Clear();
+
+	// -Iterators-
+
+	Iterator begin();
+	Iterator end();
 
 	// -Structors-
 
@@ -78,10 +79,12 @@ public:
 		ValueType* operator->();
 
 		// Retrieve the value of the node
-		ValueType* Get();
+		ValueType* GetValue();
 
 		// Retrieve the next node
-		Node* Next();
+		Node* NextNode();
+
+		Node* operator++();
 
 		friend SingleList<ValueType>;
 
@@ -95,6 +98,28 @@ public:
 
 		Node* m_Next = nullptr;
 		ValueType m_Value;
+	};
+
+	class Iterator {
+
+	public:
+		
+		// -Public API-
+
+		// Advance the iterator forward
+		Iterator operator++();
+
+		bool operator!=(const Iterator& rhs);
+
+		Node& operator*();
+		Node* operator->();
+
+		// -Structors-
+		Iterator(Node* node);
+
+	private:
+
+		Node* m_TargetNode = nullptr;
 	};
 
 private:
@@ -115,13 +140,13 @@ template< typename WriteType,
 void SingleList<ValueType>::InsertAfter(Node* node, WriteType&& writeValue) {
 
 	if (node == m_Tail) {
-		PushBack(std::forward<WriteType>(writeValue));
+		InsertAsLast(std::forward<WriteType>(writeValue));
 		return;
 	}
 
 	MIST_ASSERT(node != nullptr);
 	Node* newNode = new Node(std::forward<WriteType>(writeValue));
-	newNode->m_Next = node->Next();
+	newNode->m_Next = node->NextNode();
 	node->m_Next = newNode;
 }
 
@@ -130,7 +155,7 @@ template< typename ValueType >
 template< typename WriteType,
 	// @Template Condition: the write type must be convertible to value type
 	typename Condition >
-void SingleList<ValueType>::PushFront(WriteType&& writeValue) {
+void SingleList<ValueType>::InsertAsFirst(WriteType&& writeValue) {
 
 	if (m_Head == nullptr) {
 
@@ -151,7 +176,7 @@ template< typename ValueType >
 template< typename WriteType,
 	// @Template Condition: the write type must be convertible to value type
 	typename Condition >
-void SingleList<ValueType>::PushBack(WriteType&& writeValue) {
+void SingleList<ValueType>::InsertAsLast(WriteType&& writeValue) {
 
 	if (m_Tail == nullptr) {
 		
@@ -163,7 +188,7 @@ void SingleList<ValueType>::PushBack(WriteType&& writeValue) {
 
 		MIST_ASSERT(m_Tail->m_Next == nullptr);
 		m_Tail->m_Next = new Node(std::forward<WriteType>(writeValue));
-		m_Tail = m_Tail->Next();
+		m_Tail = m_Tail->NextNode();
 	}
 }
 
@@ -182,7 +207,7 @@ void SingleList<ValueType>::Remove(Node* node) {
 			m_Tail = nullptr;
 		}
 
-		m_Head = node->Next();
+		m_Head = node->NextNode();
 		delete node;
 		return;
 	}
@@ -192,7 +217,7 @@ void SingleList<ValueType>::Remove(Node* node) {
 			m_Tail = nullptr;
 		}
 		else {
-			m_Tail = GetNode(Size() - 2);
+			m_Tail = RetrieveNodeAt(Size() - 2);
 		}
 
 		m_Tail->m_Next = nullptr;
@@ -210,51 +235,51 @@ void SingleList<ValueType>::Remove(Node* node) {
 		}
 
 		previousNode = currentNode;
-		currentNode = previousNode->Next();
+		currentNode = previousNode->NextNode();
 	}
 }
 
 
 template< typename ValueType >
 // Find the node that passes the find method
-template< typename CheckMethod >
-typename SingleList<ValueType>::Node* SingleList<ValueType>::Find(CheckMethod findMethod) {
+template< typename Predicate >
+typename SingleList<ValueType>::Node* SingleList<ValueType>::FindNode(Predicate findMethod) {
 
 	Node* currentNode = m_Head;
 
 	// Loop through every node and determine the node that matches
 	while (currentNode != nullptr) {
 		
-		if (findMethod(*currentNode->Get())) {
+		if (findMethod(*currentNode->GetValue())) {
 			return currentNode;
 		}
 
-		currentNode = currentNode->Next();
+		currentNode = currentNode->NextNode();
 	}
 	return nullptr;
 }
 
 template< typename ValueType >
 // Find the node that passes the findMethod
-template< typename CheckMethod >
-bool SingleList<ValueType>::TryFind(CheckMethod findMethod, Node** outNode) {
+template< typename Predicate >
+bool SingleList<ValueType>::TryFindNode(Predicate findMethod, Node** outNode) {
 
 	MIST_ASSERT(outNode != nullptr);
 
-	*outNode = Find(findMethod);
+	*outNode = FindNode(findMethod);
 	return *outNode != nullptr;
 }
 
 template< typename ValueType >
 // Retrieve the value stored at index, this operation runs at O(n) time
-ValueType* SingleList<ValueType>::Get(size_t index) {
+ValueType* SingleList<ValueType>::RetrieveValueAt(size_t index) {
 
-	return GetNode(index)->Get();
+	return RetrieveNodeAt(index)->GetValue();
 }
 
 template< typename ValueType >
 // Retrieve the node at index, this operation runs at O(n) time
-typename SingleList<ValueType>::Node* SingleList<ValueType>::GetNode(size_t index) {
+typename SingleList<ValueType>::Node* SingleList<ValueType>::RetrieveNodeAt(size_t index) {
 
 	MIST_ASSERT(index < Size());
 	
@@ -262,30 +287,30 @@ typename SingleList<ValueType>::Node* SingleList<ValueType>::GetNode(size_t inde
 	Node* next = m_Head;
 	for (size_t i = 0; i < index; i++) {
 
-		next = next->Next();
+		next = next->NextNode();
 	}
 	return next;
 }
 
 template< typename ValueType >
 // Get the head of the list
-ValueType* SingleList<ValueType>::Front() {
+ValueType* SingleList<ValueType>::FirstValue() {
 
 	MIST_ASSERT(m_Head != nullptr);
-	return m_Head->Get();
+	return m_Head->GetValue();
 }
 
 template< typename ValueType >
 // Get thee back of the list
-ValueType* SingleList<ValueType>::Back() {
+ValueType* SingleList<ValueType>::LastValue() {
 
 	MIST_ASSERT(m_Tail != nullptr);
-	return m_Tail->Get();
+	return m_Tail->GetValue();
 }
 
 template< typename ValueType >
 // Get the front node of the list, this is the head
-typename SingleList<ValueType>::Node* SingleList<ValueType>::FrontNode() {
+typename SingleList<ValueType>::Node* SingleList<ValueType>::FirstNode() {
 
 	MIST_ASSERT(m_Head != nullptr);
 	return m_Head;
@@ -293,7 +318,7 @@ typename SingleList<ValueType>::Node* SingleList<ValueType>::FrontNode() {
 
 
 template< typename ValueType >
-typename SingleList<ValueType>::Node* SingleList<ValueType>::BackNode() {
+typename SingleList<ValueType>::Node* SingleList<ValueType>::LastNode() {
 
 	MIST_ASSERT(m_Tail != nullptr);
 	return m_Tail;
@@ -313,7 +338,7 @@ size_t SingleList<ValueType>::Size() const {
 	while (next != nullptr) {
 
 		count++;
-		next = next->Next();
+		next = next->NextNode();
 	}
 
 	return count;
@@ -327,13 +352,25 @@ void SingleList<ValueType>::Clear() {
 	// Loop through all the nodes and delete them
 	while (currentNode != nullptr) {
 		
-		Node* nextNode = currentNode->Next();
+		Node* nextNode = currentNode->NextNode();
 		delete currentNode;
 		currentNode = nextNode;
 	}
 
 	m_Head = nullptr;
 	m_Tail = nullptr;
+}
+
+template< typename ValueType >
+typename SingleList<ValueType>::Iterator SingleList<ValueType>::begin() {
+
+	return Iterator(FirstNode());
+}
+
+template< typename ValueType >
+typename SingleList<ValueType>::Iterator SingleList<ValueType>::end() {
+
+	return Iterator(nullptr);
 }
 
 
@@ -352,16 +389,22 @@ ValueType* SingleList<ValueType>::Node::operator->() {
 
 // Retrieve the value of the node
 template< typename ValueType >
-ValueType* SingleList<ValueType>::Node::Get() {
+ValueType* SingleList<ValueType>::Node::GetValue() {
 
 	return &m_Value;
 }
 
 // Retrieve the next node
 template< typename ValueType >
-typename SingleList<ValueType>::Node* SingleList<ValueType>::Node::Next() {
+typename SingleList<ValueType>::Node* SingleList<ValueType>::Node::NextNode() {
 
 	return m_Next;
+}
+
+template< typename ValueType >
+typename SingleList<ValueType>::Node* SingleList<ValueType>::Node::operator++() {
+	
+	return NextNode();
 }
 
 
@@ -371,6 +414,35 @@ template< typename WriteType,
 	// @TemplateCondition: The write type must be of ValueType
 	typename Condition >
 SingleList<ValueType>::Node::Node(WriteType&& writeValue) : m_Value(std::forward<WriteType>(writeValue)) {}
+
+
+template< typename ValueType >
+typename SingleList<ValueType>::Iterator SingleList<ValueType>::Iterator::operator++() {
+
+	m_TargetNode = m_TargetNode->NextNode();
+	return *this;
+}
+
+template< typename ValueType >
+bool SingleList<ValueType>::Iterator::operator!=(const Iterator& rhs) {
+
+	return rhs.m_TargetNode != m_TargetNode;
+}
+
+template< typename ValueType >
+SingleList<ValueType>::Iterator::Iterator(typename SingleList<ValueType>::Node* node) : m_TargetNode(node) {}
+
+template< typename ValueType >
+typename SingleList<ValueType>::Node& SingleList<ValueType>::Iterator::operator*() {
+
+	return *m_TargetNode;
+}
+
+template< typename ValueType >
+typename SingleList<ValueType>::Node* SingleList<ValueType>::Iterator::operator->() {
+
+	return m_TargetNode;
+}
 
 
 MIST_NAMESPACE_END

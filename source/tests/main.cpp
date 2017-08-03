@@ -615,84 +615,88 @@ void TestSingleList() {
 	
 	MIST_ASSERT(list.Size() == 0);
 	Mist::SingleList<size_t>::Node* outNode = nullptr;
-	MIST_ASSERT(list.TryFind([](const size_t& value) { return value == 10; }, &outNode) == false);
-	MIST_ASSERT(list.Find([](const size_t& value) { return value == 10; }) == nullptr);
+	MIST_ASSERT(list.TryFindNode([](const size_t& value) { return value == 10; }, &outNode) == false);
+	MIST_ASSERT(list.FindNode([](const size_t& value) { return value == 10; }) == nullptr);
 
-	list.PushFront(0);
+	list.InsertAsFirst(0);
 	MIST_ASSERT(list.Size() == 1);
-	MIST_ASSERT(list.GetNode(0) == list.FrontNode());
-	MIST_ASSERT(list.GetNode(0) == list.BackNode());
-	MIST_ASSERT(list.FrontNode() == list.BackNode());
+	MIST_ASSERT(list.RetrieveNodeAt(0) == list.FirstNode());
+	MIST_ASSERT(list.RetrieveNodeAt(0) == list.LastNode());
+	MIST_ASSERT(list.FirstNode() == list.LastNode());
 
-	MIST_ASSERT(*list.Get(0) == *list.Front());
-	MIST_ASSERT(*list.Get(0) == *list.Back());
-	MIST_ASSERT(*list.Front() == *list.Back());
+	MIST_ASSERT(*list.RetrieveValueAt(0) == *list.FirstValue());
+	MIST_ASSERT(*list.RetrieveValueAt(0) == *list.LastValue());
+	MIST_ASSERT(*list.FirstValue() == *list.LastValue());
 
-	list.Remove(list.FrontNode());
+	list.Remove(list.FirstNode());
 	MIST_ASSERT(list.Size() == 0);
 
-	list.PushBack(2);
-	MIST_ASSERT(*list.Get(0) == 2);
-	MIST_ASSERT(*list.Front() == 2);
-	MIST_ASSERT(*list.Back() == 2);
+	list.InsertAsLast(2);
+	MIST_ASSERT(*list.RetrieveValueAt(0) == 2);
+	MIST_ASSERT(*list.FirstValue() == 2);
+	MIST_ASSERT(*list.LastValue() == 2);
 
-	list.PushBack(10);
-	MIST_ASSERT(*list.Front() != *list.Back());
-	MIST_ASSERT(list.FrontNode() != list.BackNode());
-	MIST_ASSERT(*list.Back() == 10);
-	MIST_ASSERT(*list.Front() == 2);
+	list.InsertAsLast(10);
+	MIST_ASSERT(*list.FirstValue() != *list.LastValue());
+	MIST_ASSERT(list.FirstNode() != list.LastNode());
+	MIST_ASSERT(*list.LastValue() == 10);
+	MIST_ASSERT(*list.FirstValue() == 2);
 	MIST_ASSERT(list.Size() == 2);
 
-	list.InsertAfter(list.FrontNode(), 5);
+	list.InsertAfter(list.FirstNode(), 5);
 	MIST_ASSERT(list.Size() == 3);
-	MIST_ASSERT(*list.Get(1) != *list.Front());
-	MIST_ASSERT(*list.Get(1) != *list.Back());
-	MIST_ASSERT(*list.GetNode(1)->Get() == *list.Get(1));
-	MIST_ASSERT(list.Find([](const size_t& value) { return value == 5; }) == list.GetNode(1));
+	MIST_ASSERT(*list.RetrieveValueAt(1) != *list.FirstValue());
+	MIST_ASSERT(*list.RetrieveValueAt(1) != *list.LastValue());
+	MIST_ASSERT(*list.RetrieveNodeAt(1)->GetValue() == *list.RetrieveValueAt(1));
+	MIST_ASSERT(list.FindNode([](const size_t& value) { return value == 5; }) == list.RetrieveNodeAt(1));
 
-	list.InsertAfter(list.BackNode(), 15);
-	MIST_ASSERT(*list.Back() == 15);
+	list.InsertAfter(list.LastNode(), 15);
+	MIST_ASSERT(*list.LastValue() == 15);
 	MIST_ASSERT(list.Size() == 4);
 	
-	list.PushFront(0);
-	MIST_ASSERT(*list.Front() == 0);
+	list.InsertAsFirst(0);
+	MIST_ASSERT(*list.FirstValue() == 0);
 	MIST_ASSERT(list.Size() == 5);
 
 
-	size_t previousValue = *list.Front();
-	Mist::SingleList<size_t>::Node* node = list.FrontNode();
+	size_t previousValue = *list.FirstValue();
+	Mist::SingleList<size_t>::Node* node = list.FirstNode();
 	for (size_t i = 1; i < list.Size(); i++) {
 
-		node = node->Next();
-		MIST_ASSERT(*list.Get(i) > previousValue);
+		node = node->NextNode();
+		MIST_ASSERT(*list.RetrieveValueAt(i) > previousValue);
 
 		// Assure that the nodes match
-		MIST_ASSERT(list.GetNode(i) == node);
+		MIST_ASSERT(list.RetrieveNodeAt(i) == node);
 	}
 
-	MIST_ASSERT(list.TryFind([](const size_t& value) { return value == 0; }, &outNode));
+	MIST_ASSERT(list.TryFindNode([](const size_t& value) { return value == 0; }, &outNode));
 
-	list.InsertAfter(list.BackNode(), 20);
-	MIST_ASSERT(*list.Back() == 20);
+	list.InsertAfter(list.LastNode(), 20);
+	MIST_ASSERT(*list.LastValue() == 20);
 
 	MIST_ASSERT(list.Size() == 6);
-	list.Remove(list.BackNode());
+	list.Remove(list.LastNode());
 	MIST_ASSERT(list.Size() == 5);
 
 	list.Clear();
 	MIST_ASSERT(list.Size() == 0);
 
-	list.PushFront(0);
-	list.Remove(list.FrontNode());
+	list.InsertAsFirst(0);
+	list.Remove(list.FirstNode());
 	MIST_ASSERT(list.Size() == 0);
 	for (size_t i = 0; i < 10; i++) {
 
-		list.PushBack(i);
+		list.InsertAsLast(i);
 	}
 	MIST_ASSERT(list.Size() == 10);
-	list.Remove(list.FrontNode());
-	MIST_ASSERT(*list.Front() == 1);
-	MIST_ASSERT(*list.Back() == 9);
+	list.Remove(list.FirstNode());
+	MIST_ASSERT(*list.FirstValue() == 1);
+	MIST_ASSERT(*list.LastValue() == 9);
+
+	for (auto& i : list) {
+		std::cout << *i.GetValue() << std::endl;
+	}
 
 	std::cout << "Single List Tests Passed" << std::endl;
 }
