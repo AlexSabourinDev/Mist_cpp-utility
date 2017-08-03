@@ -42,7 +42,7 @@ public:
 	template< typename Predicate >
 	Node* FindNode(Predicate predicate);
 
-	// Find the node that passes the findMethod
+	// Find the node that passes the predicate
 	template< typename Predicate >
 	bool TryFindNode(Predicate predicate, Node** outNode);
 
