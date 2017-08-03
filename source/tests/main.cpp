@@ -11,6 +11,7 @@
 #include "../../include/reflection/TypeInfo.h"
 #include "../../include/reflection/Reflection.h"
 #include "../../include/data-structures/SingleList.h"
+#include "../../include/allocators/CppAllocator.h"
 
 #include <cassert>
 #include <iostream>
@@ -701,6 +702,13 @@ void TestSingleList() {
 	std::cout << "Single List Tests Passed" << std::endl;
 }
 
+void TestAllocator()
+{
+	size_t* pointer = Mist::CppAllocator::Alloc<size_t>(5);
+	MIST_ASSERT(pointer != nullptr);
+	Mist::CppAllocator::Free(pointer);
+}
+
 int main() {
 
 	TestRingBuffer();
@@ -709,6 +717,7 @@ int main() {
 	TestReflection();
 	TestHash();
 	TestSingleList();
+	TestAllocator();
 
 	Pause();
 	return 0;
