@@ -1,12 +1,13 @@
 #pragma once
 
 #include "../common/UtilityMacros.h"
+#include "../allocators/CppAllocator.h"
 #include <type_traits>
 
 MIST_NAMESPACE
 
 // SingleList is a simple singly linked list
-template< typename ValueType >
+template< typename ValueType, typename Allocator = CppAllocator >
 class SingleList {
 
 public:
@@ -88,13 +89,13 @@ public:
 
 		friend SingleList<ValueType>;
 
-	private:
-
 		// Create a node with the designated value type
 		template< typename WriteType,
 			// @TemplateCondition: The write type must be of ValueType
 			typename Condition = typename std::enable_if<std::is_convertible<WriteType, ValueType>::value>::type >
 		Node(WriteType&& writeValue);
+
+	private:
 
 		Node* m_Next = nullptr;
 		ValueType m_Value;
@@ -132,12 +133,12 @@ private:
 // -Implementation-
 
 // -SingleList-
-template< typename ValueType >
+template< typename ValueType, typename Allocator >
 // Write a value into the single list after the specified node
 template< typename WriteType,
 	// @Template Condition: the write type must be convertible to value type
 	typename Condition >
-void SingleList<ValueType>::InsertAfter(Node* node, WriteType&& writeValue) {
+void SingleList<ValueType, Allocator>::InsertAfter(Node* node, WriteType&& writeValue) {
 
 	if (node == m_Tail) {
 		InsertAsLast(std::forward<WriteType>(writeValue));
@@ -145,56 +146,56 @@ void SingleList<ValueType>::InsertAfter(Node* node, WriteType&& writeValue) {
 	}
 
 	MIST_ASSERT(node != nullptr);
-	Node* newNode = new Node(std::forward<WriteType>(writeValue));
+	Node* newNode = Allocator::Alloc<Node>(std::forward<WriteType>(writeValue));
 	newNode->m_Next = node->NextNode();
 	node->m_Next = newNode;
 }
 
-template< typename ValueType >
+template< typename ValueType, typename Allocator >
 // Write a value into the single list at the front
 template< typename WriteType,
 	// @Template Condition: the write type must be convertible to value type
 	typename Condition >
-void SingleList<ValueType>::InsertAsFirst(WriteType&& writeValue) {
+void SingleList<ValueType, Allocator>::InsertAsFirst(WriteType&& writeValue) {
 
 	if (m_Head == nullptr) {
 
 		MIST_ASSERT(m_Tail == nullptr);
-		m_Head = new Node(std::forward<WriteType>(writeValue));
+		m_Head = Allocator::Alloc<Node>(std::forward<WriteType>(writeValue));
 		m_Tail = m_Head;
 	}
 	else {
 
-		Node* newNode = new Node(std::forward<WriteType>(writeValue));
+		Node* newNode = Allocator::Alloc<Node>(std::forward<WriteType>(writeValue));
 		newNode->m_Next = m_Head;
 		m_Head = newNode;
 	}
 }
 
-template< typename ValueType >
+template< typename ValueType, typename Allocator >
 // Write a value into the single list at the front
 template< typename WriteType,
 	// @Template Condition: the write type must be convertible to value type
 	typename Condition >
-void SingleList<ValueType>::InsertAsLast(WriteType&& writeValue) {
+void SingleList<ValueType, Allocator>::InsertAsLast(WriteType&& writeValue) {
 
 	if (m_Tail == nullptr) {
 		
 		MIST_ASSERT(m_Head == nullptr);
-		m_Tail = new Node(std::forward<WriteType>(writeValue));
+		m_Tail = Allocator::Alloc<Node>(std::forward<WriteType>(writeValue));
 		m_Head = m_Tail;
 	}
 	else {
 
 		MIST_ASSERT(m_Tail->m_Next == nullptr);
-		m_Tail->m_Next = new Node(std::forward<WriteType>(writeValue));
+		m_Tail->m_Next = Allocator::Alloc<Node>(std::forward<WriteType>(writeValue));
 		m_Tail = m_Tail->NextNode();
 	}
 }
 
-template< typename ValueType >
+template< typename ValueType, typename Allocator >
 // Remove this node
-void SingleList<ValueType>::Remove(Node* node) {
+void SingleList<ValueType, Allocator>::Remove(Node* node) {
 
 	MIST_ASSERT(node != nullptr);
 
@@ -208,7 +209,7 @@ void SingleList<ValueType>::Remove(Node* node) {
 		}
 
 		m_Head = node->NextNode();
-		delete node;
+		Allocator::Free(node);
 		return;
 	}
 	else if (node == m_Tail) {
@@ -221,7 +222,7 @@ void SingleList<ValueType>::Remove(Node* node) {
 		}
 
 		m_Tail->m_Next = nullptr;
-		delete node;
+		Allocator::Free(node);
 		return;
 	}
 
@@ -229,7 +230,7 @@ void SingleList<ValueType>::Remove(Node* node) {
 
 		if (currentNode == node) {
 			
-			delete currentNode;
+			Allocator::Free(currentNode);
 			previousNode->m_Next = nullptr;
 			break;
 		}
@@ -240,10 +241,10 @@ void SingleList<ValueType>::Remove(Node* node) {
 }
 
 
-template< typename ValueType >
+template< typename ValueType, typename Allocator >
 // Find the node that passes the find method
 template< typename Predicate >
-typename SingleList<ValueType>::Node* SingleList<ValueType>::FindNode(Predicate findMethod) {
+typename SingleList<ValueType, Allocator>::Node* SingleList<ValueType, Allocator>::FindNode(Predicate findMethod) {
 
 	Node* currentNode = m_Head;
 
@@ -259,10 +260,10 @@ typename SingleList<ValueType>::Node* SingleList<ValueType>::FindNode(Predicate 
 	return nullptr;
 }
 
-template< typename ValueType >
+template< typename ValueType, typename Allocator >
 // Find the node that passes the findMethod
 template< typename Predicate >
-bool SingleList<ValueType>::TryFindNode(Predicate findMethod, Node** outNode) {
+bool SingleList<ValueType, Allocator>::TryFindNode(Predicate findMethod, Node** outNode) {
 
 	MIST_ASSERT(outNode != nullptr);
 
@@ -270,16 +271,16 @@ bool SingleList<ValueType>::TryFindNode(Predicate findMethod, Node** outNode) {
 	return *outNode != nullptr;
 }
 
-template< typename ValueType >
+template< typename ValueType, typename Allocator >
 // Retrieve the value stored at index, this operation runs at O(n) time
-ValueType* SingleList<ValueType>::RetrieveValueAt(size_t index) {
+ValueType* SingleList<ValueType, Allocator>::RetrieveValueAt(size_t index) {
 
 	return RetrieveNodeAt(index)->GetValue();
 }
 
-template< typename ValueType >
+template< typename ValueType, typename Allocator >
 // Retrieve the node at index, this operation runs at O(n) time
-typename SingleList<ValueType>::Node* SingleList<ValueType>::RetrieveNodeAt(size_t index) {
+typename SingleList<ValueType, Allocator>::Node* SingleList<ValueType, Allocator>::RetrieveNodeAt(size_t index) {
 
 	MIST_ASSERT(index < Size());
 	
@@ -292,41 +293,41 @@ typename SingleList<ValueType>::Node* SingleList<ValueType>::RetrieveNodeAt(size
 	return next;
 }
 
-template< typename ValueType >
+template< typename ValueType, typename Allocator >
 // Get the head of the list
-ValueType* SingleList<ValueType>::FirstValue() {
+ValueType* SingleList<ValueType, Allocator>::FirstValue() {
 
 	MIST_ASSERT(m_Head != nullptr);
 	return m_Head->GetValue();
 }
 
-template< typename ValueType >
+template< typename ValueType, typename Allocator >
 // Get thee back of the list
-ValueType* SingleList<ValueType>::LastValue() {
+ValueType* SingleList<ValueType, Allocator>::LastValue() {
 
 	MIST_ASSERT(m_Tail != nullptr);
 	return m_Tail->GetValue();
 }
 
-template< typename ValueType >
+template< typename ValueType, typename Allocator >
 // Get the front node of the list, this is the head
-typename SingleList<ValueType>::Node* SingleList<ValueType>::FirstNode() {
+typename SingleList<ValueType, Allocator>::Node* SingleList<ValueType, Allocator>::FirstNode() {
 
 	MIST_ASSERT(m_Head != nullptr);
 	return m_Head;
 }
 
 
-template< typename ValueType >
-typename SingleList<ValueType>::Node* SingleList<ValueType>::LastNode() {
+template< typename ValueType, typename Allocator >
+typename SingleList<ValueType, Allocator>::Node* SingleList<ValueType, Allocator>::LastNode() {
 
 	MIST_ASSERT(m_Tail != nullptr);
 	return m_Tail;
 }
 
-template< typename ValueType >
+template< typename ValueType, typename Allocator >
 // Get the back node of the list
-size_t SingleList<ValueType>::Size() const {
+size_t SingleList<ValueType, Allocator>::Size() const {
 
 	// If we have nothing, return 0
 	if (m_Head == nullptr) {
@@ -344,16 +345,16 @@ size_t SingleList<ValueType>::Size() const {
 	return count;
 }
 
-template< typename ValueType >
-void SingleList<ValueType>::Clear() {
+template< typename ValueType, typename Allocator >
+void SingleList<ValueType, Allocator>::Clear() {
 
-	Node* currentNode = m_Head;
+	typename SingleList<ValueType, Allocator>::Node* currentNode = m_Head;
 	
 	// Loop through all the nodes and delete them
 	while (currentNode != nullptr) {
 		
 		Node* nextNode = currentNode->NextNode();
-		delete currentNode;
+		Allocator::Free(currentNode);
 		currentNode = nextNode;
 	}
 
@@ -361,85 +362,85 @@ void SingleList<ValueType>::Clear() {
 	m_Tail = nullptr;
 }
 
-template< typename ValueType >
-typename SingleList<ValueType>::Iterator SingleList<ValueType>::begin() {
+template< typename ValueType, typename Allocator >
+typename SingleList<ValueType, Allocator>::Iterator SingleList<ValueType, Allocator>::begin() {
 
 	return Iterator(FirstNode());
 }
 
-template< typename ValueType >
-typename SingleList<ValueType>::Iterator SingleList<ValueType>::end() {
+template< typename ValueType, typename Allocator >
+typename SingleList<ValueType, Allocator>::Iterator SingleList<ValueType, Allocator>::end() {
 
 	return Iterator(nullptr);
 }
 
 
-template< typename ValueType >
-SingleList<ValueType>::~SingleList() {
+template< typename ValueType, typename Allocator >
+SingleList<ValueType, Allocator>::~SingleList() {
 
 	Clear();
 }
 
 // -Node-
 
-template< typename ValueType >
-ValueType* SingleList<ValueType>::Node::operator->() {
+template< typename ValueType, typename Allocator >
+ValueType* SingleList<ValueType, Allocator>::Node::operator->() {
 	return &m_Value;
 }
 
 // Retrieve the value of the node
-template< typename ValueType >
-ValueType* SingleList<ValueType>::Node::GetValue() {
+template< typename ValueType, typename Allocator >
+ValueType* SingleList<ValueType, Allocator>::Node::GetValue() {
 
 	return &m_Value;
 }
 
 // Retrieve the next node
-template< typename ValueType >
-typename SingleList<ValueType>::Node* SingleList<ValueType>::Node::NextNode() {
+template< typename ValueType, typename Allocator >
+typename SingleList<ValueType, Allocator>::Node* SingleList<ValueType, Allocator>::Node::NextNode() {
 
 	return m_Next;
 }
 
-template< typename ValueType >
-typename SingleList<ValueType>::Node* SingleList<ValueType>::Node::operator++() {
+template< typename ValueType, typename Allocator >
+typename SingleList<ValueType, Allocator>::Node* SingleList<ValueType, Allocator>::Node::operator++() {
 	
 	return NextNode();
 }
 
 
 // Create a node with the designated value type
-template< typename ValueType >
+template< typename ValueType, typename Allocator >
 template< typename WriteType,
 	// @TemplateCondition: The write type must be of ValueType
 	typename Condition >
-SingleList<ValueType>::Node::Node(WriteType&& writeValue) : m_Value(std::forward<WriteType>(writeValue)) {}
+SingleList<ValueType, Allocator>::Node::Node(WriteType&& writeValue) : m_Value(std::forward<WriteType>(writeValue)) {}
 
 
-template< typename ValueType >
-typename SingleList<ValueType>::Iterator SingleList<ValueType>::Iterator::operator++() {
+template< typename ValueType, typename Allocator >
+typename SingleList<ValueType, Allocator>::Iterator SingleList<ValueType, Allocator>::Iterator::operator++() {
 
 	m_TargetNode = m_TargetNode->NextNode();
 	return *this;
 }
 
-template< typename ValueType >
-bool SingleList<ValueType>::Iterator::operator!=(const Iterator& rhs) {
+template< typename ValueType, typename Allocator >
+bool SingleList<ValueType, Allocator>::Iterator::operator!=(const Iterator& rhs) {
 
 	return rhs.m_TargetNode != m_TargetNode;
 }
 
-template< typename ValueType >
-SingleList<ValueType>::Iterator::Iterator(typename SingleList<ValueType>::Node* node) : m_TargetNode(node) {}
+template< typename ValueType, typename Allocator >
+SingleList<ValueType, Allocator>::Iterator::Iterator(typename SingleList<ValueType, Allocator>::Node* node) : m_TargetNode(node) {}
 
-template< typename ValueType >
-typename SingleList<ValueType>::Node& SingleList<ValueType>::Iterator::operator*() {
+template< typename ValueType, typename Allocator >
+typename SingleList<ValueType, Allocator>::Node& SingleList<ValueType, Allocator>::Iterator::operator*() {
 
 	return *m_TargetNode;
 }
 
-template< typename ValueType >
-typename SingleList<ValueType>::Node* SingleList<ValueType>::Iterator::operator->() {
+template< typename ValueType, typename Allocator >
+typename SingleList<ValueType, Allocator>::Node* SingleList<ValueType, Allocator>::Iterator::operator->() {
 
 	return m_TargetNode;
 }
