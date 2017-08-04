@@ -704,9 +704,36 @@ void TestSingleList() {
 
 void TestAllocator()
 {
+	std::cout << "Cpp Allocator Tests" << std::endl;
+
 	size_t* pointer = Mist::CppAllocator::Alloc<size_t>(5);
 	MIST_ASSERT(pointer != nullptr);
 	Mist::CppAllocator::Free(pointer);
+
+	void* block = Mist::CppAllocator::Alloc(100);
+
+	*(size_t*)block = 10;
+	MIST_ASSERT(block != nullptr);
+	void* newBlock = Mist::CppAllocator::Realloc(block, 200);
+
+	block = nullptr;
+
+	MIST_ASSERT(newBlock != nullptr);
+	// Assure that the memory got copied
+	MIST_ASSERT(*(size_t*)newBlock == 10);
+
+	void* newnewBlock = Mist::CppAllocator::Realloc(newBlock, 50);
+
+	newBlock = nullptr;
+
+	MIST_ASSERT(newnewBlock != nullptr);
+
+	// Assure that the memory got copied
+	MIST_ASSERT(*(size_t*)newnewBlock == 10);
+
+	Mist::CppAllocator::Free(newnewBlock);
+	
+	std::cout << "Cpp Allocator Tests passed" << std::endl;
 }
 
 int main() {
