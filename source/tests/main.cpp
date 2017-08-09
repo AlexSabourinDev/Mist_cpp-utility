@@ -12,6 +12,7 @@
 #include "../../include/reflection/Reflection.h"
 #include "../../include/data-structures/SingleList.h"
 #include "../../include/allocators/CppAllocator.h"
+#include "../../include/data-structures/DynamicArray.h"
 
 #include <cassert>
 #include <iostream>
@@ -70,7 +71,7 @@ void TestReflection() {
 
 	const size_t CHANGE_TARGET = 1;
 	size_t changed;
-	std::unique_ptr<Mist::Detail::Callback> lambda(Mist::Detail::MakeCallback([&changed, CHANGE_TARGET]() { changed = CHANGE_TARGET; }));
+	std::unique_ptr<Mist::Detail::Callback> lambda(Mist::Detail::MakeCallback([=,&changed]() { changed = CHANGE_TARGET; }));
 
 	MIST_ASSERT(Mist::Detail::HasDefinition<void>(lambda.get()));
 	MIST_ASSERT((Mist::Detail::HasDefinition<size_t, size_t>(lambda.get())) == false);
@@ -499,7 +500,7 @@ void TestSorting() {
 		// create a sorted vector of n elements
 		std::vector<size_t> sortedVector;
 		const size_t SORTED_ELEMENT_COUNT = ELEMENT_COUNT;
-		for (int i = 0; i < SORTED_ELEMENT_COUNT; i++) {
+		for (size_t i = 0; i < SORTED_ELEMENT_COUNT; i++) {
 			sortedVector.push_back(i);
 		}
 
@@ -615,9 +616,6 @@ void TestSingleList() {
 	Mist::SingleList<size_t> list;
 	
 	MIST_ASSERT(list.Size() == 0);
-	Mist::SingleList<size_t>::Node* outNode = nullptr;
-	MIST_ASSERT(list.TryFindNode([](const size_t& value) { return value == 10; }, &outNode) == false);
-	MIST_ASSERT(list.FindNode([](const size_t& value) { return value == 10; }) == nullptr);
 
 	list.InsertAsFirst(0);
 	MIST_ASSERT(list.Size() == 1);
@@ -649,7 +647,6 @@ void TestSingleList() {
 	MIST_ASSERT(*list.RetrieveValueAt(1) != *list.FirstValue());
 	MIST_ASSERT(*list.RetrieveValueAt(1) != *list.LastValue());
 	MIST_ASSERT(*list.RetrieveNodeAt(1)->GetValue() == *list.RetrieveValueAt(1));
-	MIST_ASSERT(list.FindNode([](const size_t& value) { return value == 5; }) == list.RetrieveNodeAt(1));
 
 	list.InsertAfter(list.LastNode(), 15);
 	MIST_ASSERT(*list.LastValue() == 15);
@@ -670,8 +667,6 @@ void TestSingleList() {
 		// Assure that the nodes match
 		MIST_ASSERT(list.RetrieveNodeAt(i) == node);
 	}
-
-	MIST_ASSERT(list.TryFindNode([](const size_t& value) { return value == 0; }, &outNode));
 
 	list.InsertAfter(list.LastNode(), 20);
 	MIST_ASSERT(*list.LastValue() == 20);
@@ -698,6 +693,9 @@ void TestSingleList() {
 	for (auto& i : list) {
 		std::cout << *i.GetValue() << std::endl;
 	}
+
+	// Assure that moving works
+	Mist::SingleList<size_t> newList(std::move(list));
 
 	std::cout << "Single List Tests Passed" << std::endl;
 }
@@ -736,6 +734,99 @@ void TestAllocator()
 	std::cout << "Cpp Allocator Tests passed" << std::endl;
 }
 
+void TestDynamicArray() {
+
+	std::cout << "Testing Dynamic Array" << std::endl;
+
+	{
+		Mist::DynamicArray<size_t> testArray;
+		MIST_ASSERT(testArray.Size() == 0);
+
+		testArray.Resize(10, 0);
+
+		MIST_ASSERT(testArray.Size() == 10);
+
+		for (auto i : testArray) {
+			MIST_ASSERT(i == 0);
+		}
+
+		testArray.Clear();
+		MIST_ASSERT(testArray.Size() == 0);
+
+		testArray.InsertAsLast(10);
+		MIST_ASSERT(testArray.Size() == 1);
+		MIST_ASSERT(*testArray.LastValue() == 10);
+		MIST_ASSERT(*testArray.FirstValue() == 10);
+		MIST_ASSERT(*testArray.GetValue(0) == 10);
+		MIST_ASSERT(testArray[0] == 10);
+
+		testArray.RemoveLast();
+		MIST_ASSERT(testArray.Size() == 0);
+
+		testArray.Resize(10);
+		for (size_t i = 0; i < 10; ++i) {
+			MIST_ASSERT(*testArray.GetValue(i) == 0);
+			MIST_ASSERT(testArray[i] == 0);
+		}
+	}
+
+	{
+		size_t constructionCount = 0;
+		struct MemoryTracker {
+
+			MemoryTracker(size_t* counter) {
+				(*counter)++;
+				c = counter;
+			}
+
+			MemoryTracker(const MemoryTracker& tracker) {
+				c = tracker.c;
+				(*c)++;
+			}
+
+			~MemoryTracker() {
+				(*c)--;
+			}
+
+			size_t* c;
+		};
+
+		Mist::DynamicArray<MemoryTracker> testArray(10);
+		MIST_ASSERT(testArray.ReservedSize() >= 10);
+
+		// loop through the whole allocated raw array, even if the memory might be garbage set all the values to zero
+		// this is to assure it doesnt crash
+		for (size_t i = 0; i < testArray.ReservedSize(); i++) {
+			memset(testArray.AsRawArray() + i, 0, sizeof(MemoryTracker));
+		}
+
+		testArray.InsertAsLast(MemoryTracker(&constructionCount));
+		MIST_ASSERT(constructionCount == 1);
+
+		testArray.Resize(10, &constructionCount);
+		MIST_ASSERT(constructionCount == 10);
+
+		MIST_ASSERT(testArray.Size() == 10);
+		MIST_ASSERT(testArray.ReservedSize() <= testArray.Size());
+
+		testArray.ReserveAdditional(10);
+		MIST_ASSERT(testArray.ReservedSize() >= testArray.Size() + 10);
+		testArray.ShrinkToSize();
+		MIST_ASSERT(testArray.ReservedSize() == testArray.Size());
+
+		Mist::DynamicArray<MemoryTracker> newTracker = std::move(testArray);
+
+		MIST_ASSERT(constructionCount > 0);
+		
+		newTracker.Clear();
+		MIST_ASSERT(constructionCount == 0);
+	}
+
+
+
+	std::cout << "Dynamic Array Tests Passed" << std::endl;
+}
+
 int main() {
 
 	TestRingBuffer();
@@ -745,6 +836,7 @@ int main() {
 	TestHash();
 	TestSingleList();
 	TestAllocator();
+	TestDynamicArray();
 
 	Pause();
 	return 0;
