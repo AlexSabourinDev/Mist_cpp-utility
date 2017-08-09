@@ -40,10 +40,10 @@ inline uint32_t HashID::GetValue() const {
 
 inline bool HashID::operator==(const char* name) {
 
-	return m_HashValue == Hash_djb2(name);
+	return m_HashValue == djb2::Hash(name);
 }
 
-inline constexpr HashID::HashID(const char* name) : m_HashValue(Hash_djb2(name)) {}
+inline constexpr HashID::HashID(const char* name) : m_HashValue(djb2::Hash(name)) {}
 
 inline HashID::HashID(uint32_t hashValue) : m_HashValue(hashValue) {}
 
