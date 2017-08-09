@@ -148,7 +148,7 @@ void DynamicArray<ValueType, Allocator>::RemoveLast() {
 template< typename ValueType, typename Allocator >
 void DynamicArray<ValueType, Allocator>::ShrinkToSize() {
 
-	// If we're already the right size
+	// If we're already the right size, don't do anything, this is to avoid doing extra work
 	if (m_MemorySize == m_ItemCount * sizeof(ValueType)) {
 		return;
 	}
@@ -164,7 +164,7 @@ void DynamicArray<ValueType, Allocator>::Resize(size_t desiredSize, WriteValues&
 	// Call Clear if you want to empty out the array
 	MIST_ASSERT(desiredSize > 0);
 
-	// If the new size is the same as the current size, don't do anything
+	// If the new size is the same as the current size, don't do anything to avoid extra work
 	if (m_ItemCount == desiredSize) {
 		return;
 	}
