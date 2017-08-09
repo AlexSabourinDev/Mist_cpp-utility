@@ -38,13 +38,6 @@ public:
 	void Remove(Node* node);
 
 
-	// Find the node that meets the requirements of the predicate delegate
-	template< typename Predicate >
-	Node* FindNode(Predicate predicate);
-
-	// Find the node that passes the predicate
-	template< typename Predicate >
-	bool TryFindNode(Predicate predicate, Node** outNode);
 
 	// Retrieve the value stored at index, this operation runs at O(n) time
 	ValueType* RetrieveValueAt(size_t index);
@@ -71,7 +64,17 @@ public:
 
 	// -Structors-
 
+	SingleList() = default;
 	~SingleList();
+
+	// Copying is currently disalllowed in the singlelist this is to avoid accidental copying, if it is desired,
+	// an explicit copy method would be prefered, preferably outside this class in order to avoid
+	// cluttering the api
+	SingleList(const SingleList&) = delete;
+	SingleList& operator=(const SingleList&) = delete;
+
+	SingleList(SingleList&& rhs);
+	SingleList& operator=(SingleList&& rhs);
 
 	class Node {
 
@@ -146,7 +149,7 @@ void SingleList<ValueType, Allocator>::InsertAfter(Node* node, WriteType&& write
 	}
 
 	MIST_ASSERT(node != nullptr);
-	Node* newNode = Allocator::Alloc<Node>(std::forward<WriteType>(writeValue));
+	Node* newNode = Allocator::template Alloc<Node>(std::forward<WriteType>(writeValue));
 	newNode->m_Next = node->NextNode();
 	node->m_Next = newNode;
 }
@@ -161,12 +164,12 @@ void SingleList<ValueType, Allocator>::InsertAsFirst(WriteType&& writeValue) {
 	if (m_Head == nullptr) {
 
 		MIST_ASSERT(m_Tail == nullptr);
-		m_Head = Allocator::Alloc<Node>(std::forward<WriteType>(writeValue));
+		m_Head = Allocator::template Alloc<Node>(std::forward<WriteType>(writeValue));
 		m_Tail = m_Head;
 	}
 	else {
 
-		Node* newNode = Allocator::Alloc<Node>(std::forward<WriteType>(writeValue));
+		Node* newNode = Allocator:: template Alloc<Node>(std::forward<WriteType>(writeValue));
 		newNode->m_Next = m_Head;
 		m_Head = newNode;
 	}
@@ -182,13 +185,13 @@ void SingleList<ValueType, Allocator>::InsertAsLast(WriteType&& writeValue) {
 	if (m_Tail == nullptr) {
 		
 		MIST_ASSERT(m_Head == nullptr);
-		m_Tail = Allocator::Alloc<Node>(std::forward<WriteType>(writeValue));
+		m_Tail = Allocator:: template Alloc<Node>(std::forward<WriteType>(writeValue));
 		m_Head = m_Tail;
 	}
 	else {
 
 		MIST_ASSERT(m_Tail->m_Next == nullptr);
-		m_Tail->m_Next = Allocator::Alloc<Node>(std::forward<WriteType>(writeValue));
+		m_Tail->m_Next = Allocator:: template Alloc<Node>(std::forward<WriteType>(writeValue));
 		m_Tail = m_Tail->NextNode();
 	}
 }
@@ -240,36 +243,6 @@ void SingleList<ValueType, Allocator>::Remove(Node* node) {
 	}
 }
 
-
-template< typename ValueType, typename Allocator >
-// Find the node that passes the find method
-template< typename Predicate >
-typename SingleList<ValueType, Allocator>::Node* SingleList<ValueType, Allocator>::FindNode(Predicate findMethod) {
-
-	Node* currentNode = m_Head;
-
-	// Loop through every node and determine the node that matches
-	while (currentNode != nullptr) {
-		
-		if (findMethod(*currentNode->GetValue())) {
-			return currentNode;
-		}
-
-		currentNode = currentNode->NextNode();
-	}
-	return nullptr;
-}
-
-template< typename ValueType, typename Allocator >
-// Find the node that passes the findMethod
-template< typename Predicate >
-bool SingleList<ValueType, Allocator>::TryFindNode(Predicate findMethod, Node** outNode) {
-
-	MIST_ASSERT(outNode != nullptr);
-
-	*outNode = FindNode(findMethod);
-	return *outNode != nullptr;
-}
 
 template< typename ValueType, typename Allocator >
 // Retrieve the value stored at index, this operation runs at O(n) time
@@ -374,6 +347,21 @@ typename SingleList<ValueType, Allocator>::Iterator SingleList<ValueType, Alloca
 	return Iterator(nullptr);
 }
 
+template< typename ValueType, typename Allocator >
+SingleList<ValueType, Allocator>::SingleList(SingleList&& rhs) {
+
+	std::swap(m_Head, rhs.m_Head);
+	std::swap(m_Tail, rhs.m_Tail);
+}
+
+template< typename ValueType, typename Allocator >
+SingleList<ValueType, Allocator>& SingleList<ValueType, Allocator>::operator=(SingleList&& rhs) {
+
+	std::swap(m_Head, rhs.m_Head);
+	std::swap(m_Tail, rhs.m_Tail);
+
+	return *this;
+}
 
 template< typename ValueType, typename Allocator >
 SingleList<ValueType, Allocator>::~SingleList() {
@@ -444,6 +432,7 @@ typename SingleList<ValueType, Allocator>::Node* SingleList<ValueType, Allocator
 
 	return m_TargetNode;
 }
+
 
 
 MIST_NAMESPACE_END
