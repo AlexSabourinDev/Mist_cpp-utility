@@ -43,7 +43,7 @@ public:
 template< typename Type, typename... Arguments >
 Type* CppAllocator::Alloc(Arguments&&... args) {
 
-	Type* object = new Type(std::forward<Arguments...>(args...));
+	Type* object = new Type(std::forward<Arguments>(args)...);
 	MIST_ASSERT(object != nullptr);
 	return object;
 }
@@ -100,6 +100,11 @@ inline void CppAllocator::Free(void* object) {
 inline void* CppAllocator::Realloc(void* oldBlock, size_t newSize) {
 
 	MIST_ASSERT(newSize > 0);
+
+	// If the old block has never existed, 
+	if (oldBlock == nullptr) {
+		return Alloc(newSize);
+	}
 
 	// Assure that the memory moves in order to avoid issues with assumptions that it won't move
 #if MIST_USE_FORCED_MOVE_REALLOC && MIST_DEBUG
