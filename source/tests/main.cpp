@@ -1,6 +1,7 @@
+#include <Mist_Common/include/UtilityMacros.h>
+
 #include "../../include/data-structures/RingBuffer.h"
 #include "../../include/algorithms/Sorting.h"
-#include "../../Mist_common/include/UtilityMacros.h"
 #include "../../include/utility/BitManipulations.h"
 #include "../../include/data-structures/SingleList.h"
 #include "../../include/allocators/CppAllocator.h"
